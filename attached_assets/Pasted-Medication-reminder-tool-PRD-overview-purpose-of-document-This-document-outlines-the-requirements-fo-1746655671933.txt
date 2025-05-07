@@ -1,0 +1,174 @@
+Medication reminder tool PRD
+overview
+purpose of document
+This document outlines the requirements for a medication reminder tool aimed at helping elderly users manage their prescriptions through AI-driven image recognition and reminders. It serves as a guide for the development team to build, test, and deliver a fully functional web-based application without server-side storage.
+
+background
+Elderly users often struggle to remember medication schedules. By allowing them to photograph medication bottles, the tool leverages AI to extract dosage and frequency information, automatically create reminders, and enable confirmation or snoozing, improving adherence and reducing errors.
+
+objectives and success metrics
+objectives
+enable users to add medications via bottle photographs
+
+automatically extract dosage and schedule with AI
+
+provide timely reminders with snooze and confirmation options
+
+track medication history and completion status
+
+operate entirely in client-side state without a backend database
+
+success metrics
+medication entries added per user ≥ 1 with AI extraction accuracy ≥ 90%
+
+reminder delivery success rate ≥ 99%
+
+average user interaction time to confirm or snooze ≤ 10 seconds
+
+user satisfaction score ≥ 4.5/5 in usability testing
+
+zero critical bugs in production related to core flows
+
+assumptions and constraints
+assumptions
+users have modern browsers supporting camera access and notifications
+
+AI model runs client-side or via lightweight inference API
+
+users prefer local data storage to cloud persistence
+
+constraints
+no backend database or cloud storage; all data resides in browser state (e.g., IndexedDB or localStorage)
+
+must function offline after initial load
+
+minimal external dependencies to reduce complexity
+
+functional requirements
+image capture and recognition
+allow users to launch the device camera or upload an image
+
+display captured image preview before submission
+
+invoke AI module to recognize medication name, dosage amount, and frequency
+
+schedule creation
+generate a calendar entry based on extracted frequency (e.g., “take 1 pill every 8 hours”)
+
+allow users to adjust suggested times before saving
+
+reminders and notifications
+send push notifications at scheduled times
+
+notification must offer “Confirm” and “Snooze (10 min)” actions
+
+if snoozed, reschedule the notification 10 minutes later
+
+user actions
+confirm intake to mark a dose as taken
+
+view upcoming doses in a simple list or calendar view
+
+snooze reminders up to three times per dose
+
+edit or delete any medication entry
+
+data storage
+persist all medication entries, schedules, and statuses in browser storage
+
+ensure data persists across page reloads and browser restarts
+
+non-functional requirements
+accessibility and usability
+UI elements sized and labeled for low-vision users
+
+support screen readers and high-contrast mode
+
+performance
+initial load time ≤ 3 seconds on 4G
+
+AI inference ≤ 2 seconds per image
+
+security
+optional PIN lock to prevent unauthorized access to medication data
+
+data stored locally must not be accessible to other web origins
+
+compatibility
+support latest versions of Chrome, Firefox, and Edge on desktop and mobile
+
+responsive design for various screen sizes
+
+privacy
+no personal health data sent to external servers
+
+clear disclosure that data remains on device only
+
+user stories and acceptance criteria
+US-001
+User story: As an elderly user, I want to take a picture of a medication bottle so that the tool can identify the medication and dosage schedule.
+Acceptance criteria:
+
+Given the camera is accessed, when I capture an image, then I see a preview.
+
+When I submit the preview, then AI identifies medication name, dosage, and frequency with ≥ 90% accuracy.
+
+US-002
+User story: As an elderly user, I want the AI to suggest a schedule based on the recognized frequency so that I don’t have to enter times manually.
+Acceptance criteria:
+
+After recognition, the system displays suggested times (e.g., 8 AM, 4 PM, 12 AM).
+
+I can edit any suggested time before saving.
+
+US-003
+User story: As an elderly user, I want to view my medication schedule in a calendar or list so that I can see upcoming doses.
+Acceptance criteria:
+
+When I navigate to the schedule view, then upcoming doses for today and tomorrow are listed chronologically.
+
+US-004
+User story: As an elderly user, I want to receive push notifications at scheduled times so that I’m reminded to take my medication.
+Acceptance criteria:
+
+Given a scheduled dose, when the reminder time arrives, then I receive a notification with “Confirm” and “Snooze (10 min)” buttons.
+
+US-005
+User story: As an elderly user, I want to snooze a reminder for 10 minutes so that I can delay taking my medication briefly.
+Acceptance criteria:
+
+When I tap “Snooze,” then the notification disappears and reappears exactly 10 minutes later.
+
+US-006
+User story: As an elderly user, I want to confirm that I’ve taken a dose so that the tool can track my adherence history.
+Acceptance criteria:
+
+When I tap “Confirm,” then the dose status updates to “taken,” and the next dose remains scheduled.
+
+US-007
+User story: As an elderly user, I want to view my intake history so that I can review which doses I’ve taken.
+Acceptance criteria:
+
+In the history view, each past dose appears with date, time, and status (taken or missed).
+
+US-008
+User story: As an elderly user, I want to edit or delete a medication entry so that I can correct mistakes or remove discontinued medicines.
+Acceptance criteria:
+
+When I choose “Edit,” I can modify name, dosage, or schedule and save changes.
+
+When I choose “Delete,” I am prompted for confirmation before removal.
+
+US-009
+User story: As a user, I want all my data stored locally so that I don’t need an account or internet connection.
+Acceptance criteria:
+
+Upon entering data, it persists after page reloads and browser restarts without errors.
+
+US-010
+User story: As a user, I want to set an optional PIN so that only I can access my medication information.
+Acceptance criteria:
+
+I can enable PIN protection in settings, set a 4-digit code, and am prompted for it on each launch.
+
+After three failed attempts, the app locks and resets PIN setup after a 5-minute delay.
