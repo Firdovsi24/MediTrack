@@ -127,11 +127,11 @@ async function fileToBase64(file: File): Promise<string> {
 }
 
 /**
- * Analyze image using OpenAI Vision API
+ * Analyze image using Google's Gemini Vision API
  */
-export async function analyzeImageWithOpenAI(base64Image: string): Promise<string> {
+export async function analyzeImageWithAI(base64Image: string): Promise<string> {
   try {
-    // Use our server as a proxy to the OpenAI API to keep the API key secure
+    // Use our server as a proxy to the Gemini API to keep the API key secure
     const response = await fetch("/api/analyze-medication-image", {
       method: "POST",
       headers: {
@@ -144,13 +144,13 @@ export async function analyzeImageWithOpenAI(base64Image: string): Promise<strin
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`OpenAI API Error: ${response.status} - ${errorText}`);
+      throw new Error(`API Error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
     return data.result.trim();
   } catch (error) {
-    console.error('Error analyzing image with OpenAI:', error);
+    console.error('Error analyzing image with Gemini API:', error);
     throw new Error('Failed to analyze image: ' + (error as Error).message);
   }
 }
@@ -243,7 +243,7 @@ export function parseMedicationFromAIResponse(aiResponse: string): ExtractedMedi
 export async function processMedicationImage(imageFile: File): Promise<ExtractedMedicationData> {
   try {
     const base64Image = await fileToBase64(imageFile);
-    const aiResponse = await analyzeImageWithOpenAI(base64Image);
+    const aiResponse = await analyzeImageWithAI(base64Image);
     console.log('AI Response:', aiResponse);
     
     return parseMedicationFromAIResponse(aiResponse);
