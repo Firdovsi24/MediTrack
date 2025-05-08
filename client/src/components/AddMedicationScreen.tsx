@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { processMedicationImage, ExtractedMedicationData } from "@/lib/tesseract";
+import { processMedicationImage, ExtractedMedicationData } from "@/lib/imageRecognition";
 import { saveMedication } from "@/lib/storage";
 import { medicationFormSchema } from "@shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
