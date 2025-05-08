@@ -1,3 +1,5 @@
+import mediTrackLogo from '@/assets/meditrack-logo.svg';
+
 interface AppHeaderProps {
   onSettingsClick: () => void;
 }
@@ -6,7 +8,14 @@ const AppHeader = ({ onSettingsClick }: AppHeaderProps) => {
   return (
     <header className="py-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">MediRemind</h1>
+        <div className="flex items-center">
+          <img 
+            src={mediTrackLogo} 
+            alt="MediTrack Logo" 
+            className="h-10 w-10 mr-2"
+          />
+          <h1 className="text-3xl font-bold">MediTrack</h1>
+        </div>
         <button 
           onClick={onSettingsClick}
           aria-label="Settings" 

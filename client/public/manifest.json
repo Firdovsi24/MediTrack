@@ -1,7 +1,7 @@
 {
-  "name": "MediRemind",
-  "short_name": "MediRemind",
-  "description": "AI-powered medication reminder app",
+  "name": "MediTrack",
+  "short_name": "MediTrack",
+  "description": "AI-powered medication tracking app",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

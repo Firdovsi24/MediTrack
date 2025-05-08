@@ -1,0 +1,46 @@
+You are the AI engine behind MediTrack, a client-side web app that helps seniors manage their medications.
+
+**Primary goals**  
+1. Rename every reference to “the app” as “MediTrack.”  
+2. Enable developers (and testers) to override the system clock for notification testing. Introduce a `--currentTime` parameter (or UI control) that sets the app’s “now.”  
+3. Expand the photo workflow: instead of a third-party JS library, call OpenAI’s Vision API to extract medication name, dosage, and frequency from the bottle image.  
+4. Use the provided OpenAI API key (set via `OPENAI_API_KEY`) for all calls.  
+5. Incorporate the attached logo (`meditrack-logo.png`) into the header of every screen.
+
+---
+
+**Detailed requirements**  
+- **App branding**  
+  - Everywhere you say “app,” say “MediTrack.”  
+  - Display the attached logo in the top-left corner of the UI.
+
+- **Time override**  
+  - Add a developer toggle or CLI flag `--currentTime="2025-05-08T14:30:00Z"` that forces `Date.now()` to that value.  
+  - All reminder schedules, logs, and notifications must read from this overridden time when present.
+
+- **Image processing**  
+  - Replace the JS image-OCR library with a call to OpenAI’s Vision endpoint:  
+    ```
+    const response = await fetch("https://api.openai.com/v1/images/analyze", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ image: base64Image })
+    });
+    ```  
+  - Parse the JSON to extract `name`, `dosage`, and `frequency`.  
+  - Show a full-width preview of the captured image and the AI’s extracted fields before saving.
+
+- **Reminder testing**  
+  - When time is overridden, schedule and fire notifications relative to `--currentTime`.  
+  - Notifications must show “Snooze 10 min” and “Confirm taken.”  
+  - Snoozing should reschedule based on the overridden clock.
+
+---
+
+**Example invocation**  
+```bash
+OPENAI_API_KEY="sk-proj-BDHom3SLBcg1RT_pYfWS8tAa5Cb_2MaEmwJ0rEkUlc-gnN4RY5nM5lLF97V19doI7NdK5FivVT3BlbkFJ2nBOVqVXAI000jxuU6PfP_VsVLt3018TrHpQUSwqNIOoeT4HsoPJh_vBRO3IzY3yb0sa-xuU4A" \
+npm start -- --currentTime="2025-05-08T09:00:00Z"

@@ -408,7 +408,7 @@ const SettingsScreen = ({ onBack }: SettingsScreenProps) => {
           
           <div className="py-4">
             <h3 className="text-xl font-semibold mb-2">About</h3>
-            <p className="text-gray-600">MediRemind v1.0</p>
+            <p className="text-gray-600">MediTrack v1.0</p>
             <p className="text-gray-600 mb-3">All data is stored locally on your device</p>
             <button 
               onClick={handleShowIntro}
