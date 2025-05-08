@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { getAllMedications, getDosesForDay, getMedication, updateDose, getSettings } from '@/lib/storage';
 import { checkNotificationSupport, requestNotificationPermission, scheduleNotifications } from '@/lib/notifications';
+import { promptCaregiverNotification } from '@/lib/emailService';
 
 interface AppContextType {
   isHighContrast: boolean;
@@ -14,6 +15,9 @@ interface AppContextType {
   refreshData: () => Promise<void>;
   takeDose: (doseId: string) => Promise<void>;
   snoozeDose: (doseId: string) => Promise<void>;
+  notifyCaregiverEnabled: boolean;
+  caregiverEmail: string;
+  userName: string;
 }
 
 const AppContext = createContext<AppContextType>({
@@ -28,6 +32,9 @@ const AppContext = createContext<AppContextType>({
   refreshData: async () => {},
   takeDose: async () => {},
   snoozeDose: async () => {},
+  notifyCaregiverEnabled: false,
+  caregiverEmail: '',
+  userName: '',
 });
 
 export const useAppContext = () => useContext(AppContext);
@@ -42,6 +49,9 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   const [hasNotificationPermission, setHasNotificationPermission] = useState(false);
   const [medications, setMedications] = useState<any[]>([]);
   const [doses, setDoses] = useState<any[]>([]);
+  const [notifyCaregiverEnabled, setNotifyCaregiverEnabled] = useState(false);
+  const [caregiverEmail, setCaregiverEmail] = useState('');
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
     loadSettings();
@@ -67,6 +77,9 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       const settings = await getSettings();
       setIsHighContrast(settings.highContrast || false);
       setNotificationsEnabled(settings.notificationsEnabled !== false);
+      setNotifyCaregiverEnabled(settings.notifyCaregiverEnabled || false);
+      setCaregiverEmail(settings.caregiverEmail || '');
+      setUserName(settings.userName || '');
     } catch (error) {
       console.error('Error loading settings:', error);
     }
@@ -127,10 +140,33 @@ export const AppProvider = ({ children }: AppProviderProps) => {
 
   const takeDose = async (doseId: string) => {
     try {
+      const dose = doses.find(d => d.id === doseId);
+      if (!dose) return;
+      
+      const currentTime = new Date();
+      
       await updateDose(doseId, {
         status: 'taken',
-        actualTime: new Date()
+        actualTime: currentTime
       });
+      
+      // Send notification to caregiver if enabled
+      if (notifyCaregiverEnabled && caregiverEmail && userName) {
+        const medication = dose.medication || await getMedication(dose.medicationId);
+        if (medication) {
+          promptCaregiverNotification(
+            caregiverEmail, 
+            userName, 
+            'taken', 
+            {
+              name: medication.name,
+              dosage: medication.dosage,
+              time: currentTime
+            }
+          );
+        }
+      }
+      
       await refreshData();
     } catch (error) {
       console.error('Error taking dose:', error);
@@ -179,7 +215,10 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       doses,
       refreshData,
       takeDose,
-      snoozeDose
+      snoozeDose,
+      notifyCaregiverEnabled,
+      caregiverEmail,
+      userName
     }}>
       {children}
     </AppContext.Provider>
