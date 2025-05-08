@@ -179,6 +179,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       const dose = doses.find(d => d.id === doseId);
       if (!dose) return;
       
+      const currentTime = new Date();
       const snoozeTime = new Date();
       snoozeTime.setMinutes(snoozeTime.getMinutes() + 10);
       
@@ -187,6 +188,57 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         scheduledTime: snoozeTime,
         snoozeCount: (dose.snoozeCount || 0) + 1
       });
+      
+      // Send notification to caregiver if enabled
+      if (notifyCaregiverEnabled && caregiverEmail && userName) {
+        const medication = dose.medication || await getMedication(dose.medicationId);
+        if (medication) {
+          promptCaregiverNotification(
+            caregiverEmail, 
+            userName, 
+            'snoozed', 
+            {
+              name: medication.name,
+              dosage: medication.dosage,
+              time: currentTime
+            }
+          );
+        }
+      }
+      
+      // Schedule a new reminder after the snooze time
+      setTimeout(() => {
+        const snoozeReminder = async () => {
+          try {
+            // Check if the dose is still snoozed (it hasn't been taken yet)
+            const updatedDose = await getDose(doseId);
+            if (updatedDose && updatedDose.status === 'snoozed') {
+              // Force refresh data to get the latest medication info
+              await refreshData();
+              
+              // Show notification for the snoozed dose
+              const medDose = doses.find(d => d.id === doseId);
+              if (medDose) {
+                const medicationDetails = medDose.medication || await getMedication(medDose.medicationId);
+                if (medicationDetails) {
+                  // Play sound and show notification
+                  const audio = new Audio('/notification-sound.mp3');
+                  audio.volume = 0.7;
+                  audio.play().catch(err => console.warn('Could not play snooze reminder sound:', err));
+                  
+                  // Show in-app notification
+                  // This would be handled by the component that shows the medication notification
+                  console.log('Showing snoozed reminder for medication:', medicationDetails.name);
+                }
+              }
+            }
+          } catch (error) {
+            console.error('Error showing snoozed reminder:', error);
+          }
+        };
+        
+        snoozeReminder();
+      }, 10 * 60 * 1000); // 10 minutes
       
       await refreshData();
     } catch (error) {
