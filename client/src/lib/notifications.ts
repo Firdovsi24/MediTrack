@@ -55,15 +55,14 @@ export async function showMedicationReminder(dose: {
     audio.volume = 0.6; // Set volume to 60%
     audio.play().catch(error => console.warn('Could not play notification sound:', error));
     
+    // Create notification - note that actions only work with ServiceWorker notifications
+    // This basic notification will open the app when clicked
     const notification = new Notification('Time for your medication', {
       body: `${dose.medicationName} - ${dose.dosage}`,
       icon: '/icons/icon-192x192.png',
       tag: `medication-${dose.id}`,
       requireInteraction: true,
-      actions: [
-        { action: 'confirm', title: 'Confirm' },
-        { action: 'snooze', title: 'Snooze 10min' }
-      ]
+      // Removed actions array as it's not supported in the basic Notification API
     });
     
     notification.onclick = async (event) => {
