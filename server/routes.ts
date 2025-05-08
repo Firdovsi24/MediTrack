@@ -2,6 +2,7 @@ import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import fetch from "node-fetch";
+import sgMail from '@sendgrid/mail';
 
 // OpenAI API response type
 interface OpenAIResponse {
@@ -162,6 +163,106 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  /**
+   * Initialize SendGrid with API key
+   */
+  if (process.env.SENDGRID_API_KEY) {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    console.log('SendGrid API key configured');
+  } else {
+    console.warn('SendGrid API key not configured - email notifications will not work');
+  }
+
+  /**
+   * Email notification endpoint
+   * Handles sending email notifications to caregivers when medications are taken or snoozed
+   */
+  app.post('/api/send-caregiver-email', async (req: Request, res: Response) => {
+    try {
+      const { to, userName, action, medicationName, medicationDosage, time } = req.body;
+      
+      // Validate required fields
+      if (!to || !userName || !action || !medicationName || !time) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Missing required fields' 
+        });
+      }
+      
+      if (!process.env.SENDGRID_API_KEY) {
+        return res.status(500).json({ 
+          success: false, 
+          error: 'SendGrid API key is not configured' 
+        });
+      }
+      
+      // Format the time for display
+      const timeDate = new Date(time);
+      const timeFormatted = timeDate.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      
+      // Format the date for display
+      const dateFormatted = timeDate.toLocaleDateString([], {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      
+      // Create subject line
+      const subject = `Medication ${action === 'taken' ? 'Taken' : 'Snoozed'}: ${medicationName}`;
+      
+      // Create email body
+      let bodyText = `Hello,\n\n`;
+      bodyText += `This is an automated message to inform you that ${userName} has `;
+      
+      if (action === 'taken') {
+        bodyText += `taken their medication: ${medicationName}`;
+        if (medicationDosage) {
+          bodyText += ` (${medicationDosage})`;
+        }
+      } else {
+        bodyText += `snoozed the reminder for: ${medicationName}`;
+        if (medicationDosage) {
+          bodyText += ` (${medicationDosage})`;
+        }
+        bodyText += `\nThe medication will be reminded again in 10 minutes.`;
+      }
+      
+      bodyText += `\n\nTime: ${timeFormatted} on ${dateFormatted}\n\n`;
+      bodyText += `This is an automated message from the MediTrack medication reminder application.\n`;
+      bodyText += `Please do not reply to this email.`;
+      
+      // Create HTML version of the email
+      const bodyHtml = bodyText.replace(/\n/g, '<br>');
+      
+      // Prepare the email message
+      const msg = {
+        to,
+        from: 'meditrack-notifications@example.com', // Replace with your validated sender
+        subject,
+        text: bodyText,
+        html: `<div style="font-family: Arial, sans-serif; line-height: 1.6;">${bodyHtml}</div>`,
+      };
+      
+      // Send the email
+      console.log(`Sending ${action} notification email to ${to} for ${userName}`);
+      await sgMail.send(msg);
+      
+      res.json({ 
+        success: true, 
+        message: 'Email notification sent successfully' 
+      });
+    } catch (error) {
+      console.error('Error sending email notification:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to send email notification: ' + (error as Error).message 
+      });
+    }
+  });
+
   // Medication image analysis endpoint (using Gemini API)
   app.post('/api/analyze-medication-image', async (req: Request, res: Response) => {
     try {

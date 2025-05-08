@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { getAllMedications, getDosesForDay, getMedication, updateDose, getSettings } from '@/lib/storage';
+import { getAllMedications, getDosesForDay, getMedication, updateDose, getSettings, getDose } from '@/lib/storage';
 import { checkNotificationSupport, requestNotificationPermission, scheduleNotifications } from '@/lib/notifications';
-import { promptCaregiverNotification } from '@/lib/emailService';
+import { notifyCaregiverAutomatically } from '@/lib/emailService';
 
 interface AppContextType {
   isHighContrast: boolean;
@@ -150,11 +150,11 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         actualTime: currentTime
       });
       
-      // Send notification to caregiver if enabled
+      // Send automatic notification to caregiver if enabled
       if (notifyCaregiverEnabled && caregiverEmail && userName) {
         const medication = dose.medication || await getMedication(dose.medicationId);
         if (medication) {
-          promptCaregiverNotification(
+          notifyCaregiverAutomatically(
             caregiverEmail, 
             userName, 
             'taken', 
@@ -189,11 +189,11 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         snoozeCount: (dose.snoozeCount || 0) + 1
       });
       
-      // Send notification to caregiver if enabled
+      // Send automatic notification to caregiver if enabled
       if (notifyCaregiverEnabled && caregiverEmail && userName) {
         const medication = dose.medication || await getMedication(dose.medicationId);
         if (medication) {
-          promptCaregiverNotification(
+          notifyCaregiverAutomatically(
             caregiverEmail, 
             userName, 
             'snoozed', 
