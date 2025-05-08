@@ -24,7 +24,7 @@ interface GeminiResponse {
 }
 
 // We're not using server-side storage for this app since all data is stored locally in the browser
-// But we're implementing a minimal API structure to maintain Express app compatibility and to proxy API calls to OpenAI
+// But we're implementing a minimal API structure to maintain Express app compatibility and to proxy API calls to AI services
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Add a health check route

@@ -1,5 +1,5 @@
 /**
- * MediTrack image recognition module using OpenAI Vision API
+ * MediTrack image recognition module using Google's Gemini Vision API
  */
 
 export interface ExtractedMedicationData {
@@ -156,7 +156,7 @@ export async function analyzeImageWithAI(base64Image: string): Promise<string> {
 }
 
 /**
- * Parse the OpenAI response into structured medication data
+ * Parse the AI response into structured medication data
  */
 export function parseMedicationFromAIResponse(aiResponse: string): ExtractedMedicationData {
   const data: ExtractedMedicationData = {};
