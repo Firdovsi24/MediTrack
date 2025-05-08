@@ -1,0 +1,37 @@
+Error analyzing image with OpenAI: 
+Error {}
+message: "OpenAI API Error: 413 - {"message":"request entity too large"}"
+stack: "Error: OpenAI API Error: 413 - {"message":"request entity too large"}↵ at analyzeImageWithOpenAI (https://f96aecbe-da8d-4ccb-ac14-1997945794be-00-1haqyk10hxpk0.riker.replit.dev/src/lib/imageRecognition.ts:26:13)↵ at async processMedicationImage (https://f96aecbe-da8d-4ccb-ac14-1997945794be-00-1haqyk10hxpk0.riker.replit.dev/src/lib/imageRecognition.ts:71:24)↵ at async processImageData (https://f96aecbe-da8d-4ccb-ac14-1997945794be-00-1haqyk10hxpk0.riker.replit.dev/src/components/AddMedicationScreen.tsx:129:29)"
+get stack: ƒ ()
+set stack: ƒ ()
+[[Prototype]]: Object
+constructor: ƒ Error()
+message: "OpenAI API Error: 413 - {"message":"request entity too large"}"
+name: "Error"
+toString: ƒ toString()
+[[Prototype]]: Object
+
+Error processing medication image: 
+Error {}
+message: "Failed to analyze image: OpenAI API Error: 413 - {"message":"request entity too large"}"
+stack: "Error: Failed to analyze image: OpenAI API Error: 413 - {"message":"request entity too large"}↵ at analyzeImageWithOpenAI (https://f96aecbe-da8d-4ccb-ac14-1997945794be-00-1haqyk10hxpk0.riker.replit.dev/src/lib/imageRecognition.ts:32:11)↵ at async processMedicationImage (https://f96aecbe-da8d-4ccb-ac14-1997945794be-00-1haqyk10hxpk0.riker.replit.dev/src/lib/imageRecognition.ts:71:24)↵ at async processImageData (https://f96aecbe-da8d-4ccb-ac14-1997945794be-00-1haqyk10hxpk0.riker.replit.dev/src/components/AddMedicationScreen.tsx:129:29)"
+get stack: ƒ ()
+set stack: ƒ ()
+[[Prototype]]: Object
+
+at t.value (https://f96aecbe-da8d-4ccb-ac14-1997945794be-00-1haqyk10hxpk0.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://f96aecbe-da8d-4ccb-ac14-1997945794be-00-1haqyk10hxpk0.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://f96aecbe-da8d-4ccb-ac14-1997945794be-00-1haqyk10hxpk0.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://f96aecbe-da8d-4ccb-ac14-1997945794be-00-1haqyk10hxpk0.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
+Error processing image: 
+Error {}
+message: "Failed to process medication image: Failed to analyze image: OpenAI API Error: 413 - {"message":"request entity too large"}"
+stack: "Error: Failed to process medication image: Failed to analyze image: OpenAI API Error: 413 - {"message":"request entity too large"}↵ at processMedicationImage (https://f96aecbe-da8d-4ccb-ac14-1997945794be-00-1haqyk10hxpk0.riker.replit.dev/src/lib/imageRecognition.ts:76:11)↵ at async processImageData (https://f96aecbe-da8d-4ccb-ac14-1997945794be-00-1haqyk10hxpk0.riker.replit.dev/src/components/AddMedicationScreen.tsx:129:29)"
+get stack: ƒ ()
+set stack: ƒ ()
+[[Prototype]]: Object
+
+at t.value (https://f96aecbe-da8d-4ccb-ac14-1997945794be-00-1haqyk10hxpk0.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://f96aecbe-da8d-4ccb-ac14-1997945794be-00-1haqyk10hxpk0.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://f96aecbe-da8d-4ccb-ac14-1997945794be-00-1haqyk10hxpk0.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://f96aecbe-da8d-4ccb-ac14-1997945794be-00-1haqyk10hxpk0.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400

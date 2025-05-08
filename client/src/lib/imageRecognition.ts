@@ -10,19 +10,67 @@ export interface ExtractedMedicationData {
 }
 
 /**
- * Converts a File object to a base64 string
+ * Converts a File object to a base64 string with resizing to avoid the "request entity too large" error
  */
 async function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
+    // First read the image file
     const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      const base64 = reader.result as string;
-      // Remove the data URL prefix (e.g., "data:image/jpeg;base64,")
-      const base64Data = base64.split(',')[1];
-      resolve(base64Data);
+    reader.onload = (event) => {
+      if (!event.target || !event.target.result) {
+        reject(new Error('Failed to read file'));
+        return;
+      }
+      
+      // Create an image element to get dimensions and resize
+      const img = new Image();
+      img.onload = () => {
+        // Create a canvas to resize the image
+        const canvas = document.createElement('canvas');
+        
+        // Calculate new dimensions (max width/height 800px to reduce file size)
+        const maxSize = 800;
+        let width = img.width;
+        let height = img.height;
+        
+        if (width > height && width > maxSize) {
+          height = Math.round((height * maxSize) / width);
+          width = maxSize;
+        } else if (height > maxSize) {
+          width = Math.round((width * maxSize) / height);
+          height = maxSize;
+        }
+        
+        // Set canvas dimensions and draw resized image
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+          reject(new Error('Failed to get canvas context'));
+          return;
+        }
+        
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Get base64 data from canvas (with reduced quality to decrease file size)
+        const resizedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+        
+        // Remove the data URL prefix
+        const base64Data = resizedBase64.split(',')[1];
+        resolve(base64Data);
+      };
+      
+      img.onerror = () => {
+        reject(new Error('Failed to load image for resizing'));
+      };
+      
+      // Set the source of the image to the file data
+      img.src = event.target.result.toString();
     };
+    
     reader.onerror = (error) => reject(error);
+    reader.readAsDataURL(file);
   });
 }
 

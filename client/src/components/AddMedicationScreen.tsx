@@ -48,7 +48,12 @@ const AddMedicationScreen = ({ onBack, onContinueToSchedule }: AddMedicationScre
       
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         const stream = await navigator.mediaDevices.getUserMedia({ 
-          video: { facingMode: 'environment' } 
+          video: { 
+            facingMode: 'environment',
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
+            aspectRatio: { ideal: 16/9 }
+          } 
         });
         
         if (videoRef.current) {
@@ -233,7 +238,7 @@ const AddMedicationScreen = ({ onBack, onContinueToSchedule }: AddMedicationScre
         
         {/* Camera Preview */}
         {cameraActive && (
-          <div className="bg-gray-200 rounded-xl overflow-hidden aspect-[4/3] mb-6 flex items-center justify-center">
+          <div className="bg-gray-200 rounded-xl overflow-hidden aspect-video mb-6 flex items-center justify-center">
             <video 
               ref={videoRef}
               className="w-full h-full object-cover"
@@ -255,7 +260,7 @@ const AddMedicationScreen = ({ onBack, onContinueToSchedule }: AddMedicationScre
         
         {/* Image Preview */}
         {imagePreview && (
-          <div className="bg-gray-200 rounded-xl overflow-hidden aspect-[4/3] mb-6">
+          <div className="bg-gray-200 rounded-xl overflow-hidden aspect-video mb-6">
             <img 
               src={imagePreview} 
               alt="Medication bottle preview" 
