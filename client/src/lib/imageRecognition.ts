@@ -10,7 +10,7 @@ export interface ExtractedMedicationData {
 }
 
 /**
- * Converts a File object to a base64 string with resizing to avoid the "request entity too large" error
+ * Converts a File object to a base64 string with aggressive resizing to avoid the "request entity too large" error
  */
 async function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -28,8 +28,8 @@ async function fileToBase64(file: File): Promise<string> {
         // Create a canvas to resize the image
         const canvas = document.createElement('canvas');
         
-        // Calculate new dimensions (max width/height 800px to reduce file size)
-        const maxSize = 800;
+        // Calculate new dimensions (reduced to max 600px to further reduce file size)
+        const maxSize = 600;
         let width = img.width;
         let height = img.height;
         
@@ -51,14 +51,66 @@ async function fileToBase64(file: File): Promise<string> {
           return;
         }
         
+        // Apply some background optimization
+        ctx.fillStyle = 'white'; // Set white background
+        ctx.fillRect(0, 0, width, height);
+        
+        // Draw the image with the white background
         ctx.drawImage(img, 0, 0, width, height);
         
-        // Get base64 data from canvas (with reduced quality to decrease file size)
-        const resizedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+        // Get base64 data from canvas (with more aggressive quality reduction to 0.5)
+        const resizedBase64 = canvas.toDataURL('image/jpeg', 0.5);
         
-        // Remove the data URL prefix
+        // Check the size of the base64 string to ensure it's not too large (approx 6MB limit)
         const base64Data = resizedBase64.split(',')[1];
-        resolve(base64Data);
+        const approximateSizeInBytes = Math.ceil((base64Data.length * 3) / 4);
+        
+        console.log(`Resized image size: ${(approximateSizeInBytes / (1024 * 1024)).toFixed(2)}MB`);
+        
+        // If still too large, resize again with even more aggressive compression
+        if (approximateSizeInBytes > 6 * 1024 * 1024) {
+          // Create a smaller canvas
+          const smallerCanvas = document.createElement('canvas');
+          const smallerMaxSize = 400; // Even smaller size
+          let smallerWidth = width;
+          let smallerHeight = height;
+          
+          if (smallerWidth > smallerHeight && smallerWidth > smallerMaxSize) {
+            smallerHeight = Math.round((smallerHeight * smallerMaxSize) / smallerWidth);
+            smallerWidth = smallerMaxSize;
+          } else if (smallerHeight > smallerMaxSize) {
+            smallerWidth = Math.round((smallerWidth * smallerMaxSize) / smallerHeight);
+            smallerHeight = smallerMaxSize;
+          }
+          
+          smallerCanvas.width = smallerWidth;
+          smallerCanvas.height = smallerHeight;
+          const smallerCtx = smallerCanvas.getContext('2d');
+          
+          if (!smallerCtx) {
+            reject(new Error('Failed to get canvas context for smaller image'));
+            return;
+          }
+          
+          // White background
+          smallerCtx.fillStyle = 'white';
+          smallerCtx.fillRect(0, 0, smallerWidth, smallerHeight);
+          
+          // Draw the image
+          smallerCtx.drawImage(img, 0, 0, smallerWidth, smallerHeight);
+          
+          // Get more compressed base64 data
+          const moreCompressedBase64 = smallerCanvas.toDataURL('image/jpeg', 0.3);
+          const finalBase64Data = moreCompressedBase64.split(',')[1];
+          
+          const finalSizeInBytes = Math.ceil((finalBase64Data.length * 3) / 4);
+          console.log(`Further compressed image size: ${(finalSizeInBytes / (1024 * 1024)).toFixed(2)}MB`);
+          
+          resolve(finalBase64Data);
+        } else {
+          // Original resized image is small enough
+          resolve(base64Data);
+        }
       };
       
       img.onerror = () => {
@@ -112,24 +164,58 @@ export function parseMedicationFromAIResponse(aiResponse: string): ExtractedMedi
   // Split response by lines
   const lines = aiResponse.split('\n').filter(line => line.trim() !== '');
   
-  // Parse each line
+  // Parse each line - with more robust splitting to handle different formats
   for (const line of lines) {
     const lowerLine = line.toLowerCase();
     
+    // Use robust splitting that handles variations in format
+    const getValuePart = (line: string): string | null => {
+      // Handle case with proper colon formatting
+      if (line.includes(':')) {
+        return line.split(':')[1]?.trim();
+      }
+      // Try to extract value from other formats
+      const patterns = [
+        /medication\s*name\s*[:-]?\s*(.*)/i,
+        /name\s*[:-]?\s*(.*)/i,
+        /dosage\s*[:-]?\s*(.*)/i,
+        /strength\s*[:-]?\s*(.*)/i,
+        /instructions?\s*[:-]?\s*(.*)/i,
+        /directions?\s*[:-]?\s*(.*)/i,
+        /take\s*[:-]?\s*(.*)/i,
+        /frequency\s*[:-]?\s*(.*)/i
+      ];
+      
+      for (const pattern of patterns) {
+        const match = line.match(pattern);
+        if (match && match[1]) {
+          return match[1].trim();
+        }
+      }
+      
+      return null;
+    };
+    
+    // Extract medication name
     if (lowerLine.includes('medication name') || lowerLine.startsWith('name')) {
-      const namePart = line.split(':')[1];
-      if (namePart && namePart.trim() !== 'Unknown') {
-        data.name = namePart.trim();
+      const namePart = getValuePart(line);
+      if (namePart && namePart !== 'Unknown') {
+        // Clean up any brackets or other formatting
+        data.name = namePart.replace(/[\[\]]/g, '').trim();
       }
-    } else if (lowerLine.includes('dosage') || lowerLine.includes('strength')) {
-      const dosagePart = line.split(':')[1];
-      if (dosagePart && dosagePart.trim() !== 'Unknown') {
-        data.dosage = dosagePart.trim();
+    } 
+    // Extract dosage information
+    else if (lowerLine.includes('dosage') || lowerLine.includes('strength')) {
+      const dosagePart = getValuePart(line);
+      if (dosagePart && dosagePart !== 'Unknown') {
+        data.dosage = dosagePart.replace(/[\[\]]/g, '').trim();
       }
-    } else if (lowerLine.includes('instruction') || lowerLine.includes('directions') || lowerLine.includes('take')) {
-      const instructionsPart = line.split(':')[1];
-      if (instructionsPart && instructionsPart.trim() !== 'Unknown') {
-        data.instructions = instructionsPart.trim();
+    } 
+    // Extract instructions
+    else if (lowerLine.includes('instruction') || lowerLine.includes('directions') || lowerLine.includes('take')) {
+      const instructionsPart = getValuePart(line);
+      if (instructionsPart && instructionsPart !== 'Unknown') {
+        data.instructions = instructionsPart.replace(/[\[\]]/g, '').trim();
         
         // Try to extract frequency from instructions
         const frequencyMatches = instructionsPart.match(/(daily|twice daily|every\s*\d+\s*hours?|once a day|twice a day|three times a day|bedtime)/i);
@@ -137,14 +223,17 @@ export function parseMedicationFromAIResponse(aiResponse: string): ExtractedMedi
           data.frequency = frequencyMatches[1].toLowerCase();
         }
       }
-    } else if (lowerLine.includes('frequency')) {
-      const frequencyPart = line.split(':')[1];
-      if (frequencyPart && frequencyPart.trim() !== 'Unknown') {
-        data.frequency = frequencyPart.trim().toLowerCase();
+    } 
+    // Extract direct frequency mention
+    else if (lowerLine.includes('frequency')) {
+      const frequencyPart = getValuePart(line);
+      if (frequencyPart && frequencyPart !== 'Unknown') {
+        data.frequency = frequencyPart.replace(/[\[\]]/g, '').trim().toLowerCase();
       }
     }
   }
   
+  console.log('Parsed medication data:', data);
   return data;
 }
 
