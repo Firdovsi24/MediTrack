@@ -14,7 +14,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
     <div className="container mx-auto px-4 pb-24 max-w-md">
       <div className="py-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-4">MediRemind</h1>
+          <h1 className="text-4xl font-bold mb-4">MediTrack</h1>
           <p className="text-xl">Your personal medication reminder assistant</p>
         </div>
         

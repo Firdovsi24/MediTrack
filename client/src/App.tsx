@@ -9,7 +9,7 @@ import Home from "@/pages/home";
 import { AppProvider } from "@/contexts/AppContext";
 import PinLockScreen from "@/components/PinLockScreen";
 import WelcomeScreen from "@/components/WelcomeScreen";
-import { getSettings } from "@/lib/storage";
+import { getSettings, updateSettings } from "@/lib/storage";
 
 function Router() {
   return (
@@ -27,19 +27,24 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if first visit
-    const checkFirstVisit = async () => {
+    // Check if PIN protection is enabled
+    const checkSettings = async () => {
       const settings = await getSettings();
-      const hasVisited = settings.hasVisitedBefore;
       const hasPinProtection = settings.pinProtection && settings.pin;
       
-      setShowWelcome(!hasVisited);
+      // Always skip welcome screen
+      setShowWelcome(false);
       setShowPinLock(hasPinProtection);
       setPinVerified(!hasPinProtection);
       setLoading(false);
+      
+      // Mark as visited if it's first time
+      if (!settings.hasVisitedBefore) {
+        await updateSettings({ hasVisitedBefore: true });
+      }
     };
     
-    checkFirstVisit();
+    checkSettings();
   }, []);
 
   const handleWelcomeComplete = () => {
