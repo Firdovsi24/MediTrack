@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getSettings, updateSettings, clearAllData, exportData, importData } from '@/lib/storage';
+import { getSettings, updateSettings, clearAllData } from '@/lib/storage';
 import { useToast } from '@/hooks/use-toast';
 import { useAppContext } from '@/contexts/AppContext';
 
@@ -147,80 +147,7 @@ const SettingsScreen = ({ onBack }: SettingsScreenProps) => {
     }
   };
 
-  const handleExportData = async () => {
-    try {
-      const data = await exportData();
-      const jsonString = JSON.stringify(data, null, 2);
-      const blob = new Blob([jsonString], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `mediremind_export_${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      toast({
-        title: "Data exported",
-        description: "Your medication data has been exported"
-      });
-    } catch (error) {
-      console.error('Error exporting data:', error);
-      toast({
-        title: "Export failed",
-        description: "Could not export your data",
-        variant: "destructive",
-      });
-    }
-  };
 
-  const handleImportData = async () => {
-    try {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'application/json';
-      
-      input.onchange = async (e) => {
-        const target = e.target as HTMLInputElement;
-        if (!target.files || target.files.length === 0) return;
-        
-        const file = target.files[0];
-        const reader = new FileReader();
-        
-        reader.onload = async (event) => {
-          try {
-            const jsonData = JSON.parse(event.target?.result as string);
-            await importData(jsonData);
-            
-            toast({
-              title: "Data imported",
-              description: "Your medication data has been imported successfully"
-            });
-          } catch (error) {
-            console.error('Error parsing import file:', error);
-            toast({
-              title: "Import failed",
-              description: "The file format is invalid",
-              variant: "destructive",
-            });
-          }
-        };
-        
-        reader.readAsText(file);
-      };
-      
-      input.click();
-    } catch (error) {
-      console.error('Error importing data:', error);
-      toast({
-        title: "Import failed",
-        description: "Could not import your data",
-        variant: "destructive",
-      });
-    }
-  };
 
   const handleClearData = async () => {
     if (window.confirm('Are you sure you want to clear all your medication data? This cannot be undone.')) {
@@ -386,18 +313,6 @@ const SettingsScreen = ({ onBack }: SettingsScreenProps) => {
           
           <div className="border-b border-gray-300 py-4">
             <h3 className="text-xl font-semibold mb-2">Data Management</h3>
-            <button 
-              onClick={handleExportData}
-              className="text-primary font-medium block mb-3"
-            >
-              Export Data
-            </button>
-            <button 
-              onClick={handleImportData}
-              className="text-primary font-medium block mb-3"
-            >
-              Import Data
-            </button>
             <button 
               onClick={handleClearData}
               className="text-destructive font-medium"

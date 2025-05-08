@@ -238,7 +238,7 @@ const AddMedicationScreen = ({ onBack, onContinueToSchedule }: AddMedicationScre
         
         {/* Camera Preview */}
         {cameraActive && (
-          <div className="bg-gray-200 rounded-xl overflow-hidden aspect-video mb-6 flex items-center justify-center">
+          <div className="bg-gray-200 rounded-xl overflow-hidden mb-6 flex items-center justify-center" style={{ height: '300px' }}>
             <video 
               ref={videoRef}
               className="w-full h-full object-cover"
@@ -260,7 +260,7 @@ const AddMedicationScreen = ({ onBack, onContinueToSchedule }: AddMedicationScre
         
         {/* Image Preview */}
         {imagePreview && (
-          <div className="bg-gray-200 rounded-xl overflow-hidden aspect-video mb-6">
+          <div className="bg-gray-200 rounded-xl overflow-hidden mb-6" style={{ height: '300px' }}>
             <img 
               src={imagePreview} 
               alt="Medication bottle preview" 

@@ -50,6 +50,11 @@ export async function showMedicationReminder(dose: {
   }
   
   try {
+    // Play a calm notification sound
+    const audio = new Audio('/notification-sound.mp3');
+    audio.volume = 0.6; // Set volume to 60%
+    audio.play().catch(error => console.warn('Could not play notification sound:', error));
+    
     const notification = new Notification('Time for your medication', {
       body: `${dose.medicationName} - ${dose.dosage}`,
       icon: '/icons/icon-192x192.png',
@@ -79,18 +84,24 @@ export async function showMedicationReminder(dose: {
           } else if (action.action === 'snooze') {
             const doseDetails = await getDose(dose.id);
             if (doseDetails) {
-              const snoozeTime = new Date();
-              snoozeTime.setMinutes(snoozeTime.getMinutes() + 10);
+              const snoozeDateTime = new Date();
+              snoozeDateTime.setMinutes(snoozeDateTime.getMinutes() + 10);
               await updateDose(dose.id, {
                 status: 'snoozed',
-                scheduledTime: snoozeTime,
+                scheduledTime: snoozeDateTime,
                 snoozeCount: (doseDetails.snoozeCount || 0) + 1
               });
               
               // Schedule a new notification for 10 minutes later
+              const snoozeDelay = 10 * 60 * 1000; // 10 minutes in milliseconds
+              console.log(`Scheduling snoozed reminder for ${dose.medicationName} in 10 minutes`);
               setTimeout(() => {
-                showMedicationReminder(dose);
-              }, 10 * 60 * 1000);
+                console.log(`Showing snoozed reminder for ${dose.medicationName}`);
+                showMedicationReminder({
+                  ...dose,
+                  id: doseDetails.id, // Ensure we're using the same ID for tracking
+                });
+              }, snoozeDelay);
             }
           }
         }
