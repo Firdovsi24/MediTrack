@@ -31,6 +31,9 @@ interface MediRemindDB extends DBSchema {
       pin: string;
       highContrast: boolean;
       notificationsEnabled: boolean;
+      userName: string;
+      caregiverEmail: string;
+      notifyCaregiverEnabled: boolean;
     };
   };
 }
@@ -69,6 +72,9 @@ export async function getSettings() {
     pin: '',
     highContrast: false,
     notificationsEnabled: true,
+    userName: '',
+    caregiverEmail: '',
+    notifyCaregiverEnabled: false,
   };
   return settings;
 }
@@ -79,6 +85,9 @@ export async function updateSettings(settings: Partial<{
   pin: string;
   highContrast: boolean;
   notificationsEnabled: boolean;
+  userName: string;
+  caregiverEmail: string;
+  notifyCaregiverEnabled: boolean;
 }>) {
   const db = await getDB();
   const currentSettings = await getSettings();

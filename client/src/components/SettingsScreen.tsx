@@ -12,7 +12,10 @@ const SettingsScreen = ({ onBack }: SettingsScreenProps) => {
     notificationsEnabled: true,
     pinProtection: false,
     pin: '',
-    highContrast: false
+    highContrast: false,
+    userName: '',
+    caregiverEmail: '',
+    notifyCaregiverEnabled: false
   });
   const [showPinForm, setShowPinForm] = useState(false);
   const [newPin, setNewPin] = useState('');
@@ -32,7 +35,10 @@ const SettingsScreen = ({ onBack }: SettingsScreenProps) => {
         notificationsEnabled: storedSettings.notificationsEnabled || true,
         pinProtection: storedSettings.pinProtection || false,
         pin: storedSettings.pin || '',
-        highContrast: storedSettings.highContrast || false
+        highContrast: storedSettings.highContrast || false,
+        userName: storedSettings.userName || '',
+        caregiverEmail: storedSettings.caregiverEmail || '',
+        notifyCaregiverEnabled: storedSettings.notifyCaregiverEnabled || false
       });
     } catch (error) {
       console.error('Error loading settings:', error);
@@ -309,6 +315,79 @@ const SettingsScreen = ({ onBack }: SettingsScreenProps) => {
                 ></label>
               </div>
             </div>
+          </div>
+          
+          <div className="border-b border-gray-300 py-4">
+            <h3 className="text-xl font-semibold mb-2">Caregiver Notifications</h3>
+            <div className="mb-4">
+              <label htmlFor="userName" className="block text-sm mb-1">Your Name</label>
+              <input 
+                type="text" 
+                id="userName"
+                value={settings.userName}
+                onChange={(e) => setSettings({...settings, userName: e.target.value})}
+                className="w-full border-2 border-gray-300 rounded-lg px-4 py-2 mb-3"
+                placeholder="Enter your name"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="caregiverEmail" className="block text-sm mb-1">Caregiver's Email</label>
+              <input 
+                type="email" 
+                id="caregiverEmail"
+                value={settings.caregiverEmail}
+                onChange={(e) => setSettings({...settings, caregiverEmail: e.target.value})}
+                className="w-full border-2 border-gray-300 rounded-lg px-4 py-2 mb-3"
+                placeholder="Enter caregiver's email"
+              />
+            </div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-lg">Notify caregiver about medications</span>
+              <div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full">
+                <input 
+                  type="checkbox" 
+                  id="caregiver-toggle" 
+                  className="absolute w-6 h-6 transition duration-200 ease-in-out bg-white border-4 border-gray-300 rounded-full appearance-none cursor-pointer peer checked:border-primary checked:bg-white checked:right-0 focus:outline-none focus:ring-4 focus:ring-primary-light"
+                  checked={settings.notifyCaregiverEnabled}
+                  onChange={async () => {
+                    const newValue = !settings.notifyCaregiverEnabled;
+                    await updateSettings({ 
+                      notifyCaregiverEnabled: newValue,
+                      userName: settings.userName,
+                      caregiverEmail: settings.caregiverEmail
+                    });
+                    setSettings({...settings, notifyCaregiverEnabled: newValue});
+                    
+                    toast({
+                      title: newValue ? "Caregiver notifications enabled" : "Caregiver notifications disabled",
+                      description: newValue 
+                        ? "Your caregiver will be notified when you take or snooze medications" 
+                        : "Your caregiver will not receive notifications",
+                    });
+                  }}
+                />
+                <label 
+                  htmlFor="caregiver-toggle" 
+                  className="block h-full overflow-hidden rounded-full bg-gray-300 cursor-pointer peer-checked:bg-primary"
+                ></label>
+              </div>
+            </div>
+            <button 
+              onClick={async () => {
+                // Save user name and caregiver email
+                await updateSettings({
+                  userName: settings.userName,
+                  caregiverEmail: settings.caregiverEmail
+                });
+                toast({
+                  title: "Caregiver info saved",
+                  description: "Your name and caregiver email have been saved"
+                });
+              }}
+              className="px-4 py-2 bg-primary text-white rounded-lg text-sm"
+            >
+              Save Caregiver Info
+            </button>
           </div>
           
           <div className="border-b border-gray-300 py-4">
