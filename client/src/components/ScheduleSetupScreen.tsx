@@ -75,9 +75,18 @@ const ScheduleSetupScreen = ({ medicationId, onBack, onComplete }: ScheduleSetup
     let newDays: number[];
     
     if (currentDays.includes(day)) {
+      // Don't allow removing the last day
+      if (currentDays.length <= 1) {
+        toast({
+          title: "Selection Required",
+          description: "You must select at least one day of the week",
+          variant: "destructive",
+        });
+        return;
+      }
       newDays = currentDays.filter(d => d !== day);
     } else {
-      newDays = [...currentDays, day];
+      newDays = [...currentDays, day].sort((a, b) => a - b); // Sort days in order
     }
     
     setValue("specificDays", newDays);

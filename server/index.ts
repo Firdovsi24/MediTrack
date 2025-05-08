@@ -4,8 +4,8 @@ import { setupVite, serveStatic, log } from "./vite";
 import '../client/src/lib/timeOverride';
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: '10mb' }));  // Increase the JSON size limit for larger images
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 app.use((req, res, next) => {
   const start = Date.now();
