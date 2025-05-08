@@ -51,9 +51,31 @@ export async function showMedicationReminder(dose: {
   
   try {
     // Play a calm notification sound
-    const audio = new Audio('/notification-sound.mp3');
-    audio.volume = 0.6; // Set volume to 60%
-    audio.play().catch(error => console.warn('Could not play notification sound:', error));
+    try {
+      const audio = new Audio('/notification-sound.mp3');
+      
+      // Set up audio properties
+      audio.volume = 0.7; // Set volume to 70%
+      audio.loop = false;
+      
+      // Make sure the audio is loaded before playing
+      audio.addEventListener('canplaythrough', () => {
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => console.log('Notification sound played successfully'))
+            .catch(error => console.warn('Could not play notification sound:', error));
+        }
+      });
+      
+      // Handle loading errors
+      audio.addEventListener('error', (e) => {
+        console.error('Error loading notification sound:', e);
+      });
+      
+    } catch (error) {
+      console.warn('Could not create audio element:', error);
+    }
     
     // Create notification - note that actions only work with ServiceWorker notifications
     // This basic notification will open the app when clicked
