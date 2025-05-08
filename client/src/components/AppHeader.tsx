@@ -1,4 +1,4 @@
-import mediTrackLogo from '@/assets/meditrack-logo.svg';
+import mediTrackLogo from '../assets/logo.png';
 
 interface AppHeaderProps {
   onSettingsClick: () => void;
