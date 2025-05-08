@@ -30,7 +30,7 @@ function App() {
     // Check if PIN protection is enabled
     const checkSettings = async () => {
       const settings = await getSettings();
-      const hasPinProtection = settings.pinProtection && settings.pin;
+      const hasPinProtection = Boolean(settings.pinProtection && settings.pin);
       
       // Always skip welcome screen
       setShowWelcome(false);

@@ -36,6 +36,7 @@ const ScheduleTab = ({ onAddMedicationClick }: ScheduleTabProps) => {
   }, []);
 
   useEffect(() => {
+    // Call loadDaySchedule without arguments to use the current medications state
     loadDaySchedule();
   }, [selectedDate]);
   
@@ -70,7 +71,9 @@ const ScheduleTab = ({ onAddMedicationClick }: ScheduleTabProps) => {
       );
       
       setMedications(medsWithSchedules);
-      await loadDaySchedule();
+      
+      // Now that medications are loaded, fetch the day schedule
+      await loadDaySchedule(medsWithSchedules);
     } catch (error) {
       console.error('Error loading medications:', error);
       toast({
@@ -83,7 +86,7 @@ const ScheduleTab = ({ onAddMedicationClick }: ScheduleTabProps) => {
     }
   };
 
-  const loadDaySchedule = async () => {
+  const loadDaySchedule = async (medsData = medications) => {
     try {
       const doses = await getDosesForDay(selectedDate);
       
@@ -94,7 +97,8 @@ const ScheduleTab = ({ onAddMedicationClick }: ScheduleTabProps) => {
       
       await Promise.all(
         doses.map(async (dose) => {
-          const medication = medications.find(med => med.id === dose.medicationId);
+          // Use the provided medications data or fall back to the state
+          const medication = medsData.find(med => med.id === dose.medicationId);
           const doseWithDetails = {
             ...dose,
             medication,
@@ -113,9 +117,9 @@ const ScheduleTab = ({ onAddMedicationClick }: ScheduleTabProps) => {
       );
       
       setDaySchedule({
-        morning: morning.sort((a, b) => a.scheduledTime - b.scheduledTime),
-        afternoon: afternoon.sort((a, b) => a.scheduledTime - b.scheduledTime),
-        evening: evening.sort((a, b) => a.scheduledTime - b.scheduledTime)
+        morning: morning.sort((a, b) => a.scheduledTime.getTime() - b.scheduledTime.getTime()),
+        afternoon: afternoon.sort((a, b) => a.scheduledTime.getTime() - b.scheduledTime.getTime()),
+        evening: evening.sort((a, b) => a.scheduledTime.getTime() - b.scheduledTime.getTime())
       });
     } catch (error) {
       console.error('Error loading day schedule:', error);
