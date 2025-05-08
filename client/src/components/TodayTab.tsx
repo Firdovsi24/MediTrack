@@ -164,7 +164,7 @@ const TodayTab = ({ onAddMedicationClick }: TodayTabProps) => {
           <div className="flex space-x-4">
             <button 
               onClick={() => handleTakeNow(nextDose.id)}
-              className="flex-1 bg-success hover:bg-green-600 text-white font-bold py-4 px-4 rounded-lg transition"
+              className="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-4 rounded-lg transition"
             >
               <i className="fas fa-check mr-2"></i> Take Now
             </button>

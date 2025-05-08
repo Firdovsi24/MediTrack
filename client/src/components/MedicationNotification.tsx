@@ -73,7 +73,7 @@ const MedicationNotification = ({
       <div className="flex space-x-2">
         <button 
           onClick={handleConfirm}
-          className="flex-1 bg-success hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition"
+          className="flex-1 bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition"
         >
           <i className="fas fa-check mr-1"></i> Confirm
         </button>
