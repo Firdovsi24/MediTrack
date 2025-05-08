@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { format, addDays, isSameDay } from "date-fns";
-import { getAllMedications, getSchedulesForMedication, getDosesForDay } from "@/lib/storage";
+import { getAllMedications, getSchedulesForMedication, getDosesForDay, deleteMedication } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
 
 interface ScheduleTabProps {
@@ -16,6 +16,8 @@ const ScheduleTab = ({ onAddMedicationClick }: ScheduleTabProps) => {
     evening: []
   });
   const [loading, setLoading] = useState(true);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   // Generate week days for the schedule view
@@ -36,6 +38,20 @@ const ScheduleTab = ({ onAddMedicationClick }: ScheduleTabProps) => {
   useEffect(() => {
     loadDaySchedule();
   }, [selectedDate]);
+  
+  // Close the menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenuId(null);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const loadMedications = async () => {
     try {
@@ -108,6 +124,39 @@ const ScheduleTab = ({ onAddMedicationClick }: ScheduleTabProps) => {
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
+  };
+  
+  const toggleMenu = (medId: string) => {
+    if (openMenuId === medId) {
+      setOpenMenuId(null);
+    } else {
+      setOpenMenuId(medId);
+    }
+  };
+  
+  const handleDeleteMedication = async (medId: string) => {
+    try {
+      if (confirm('Are you sure you want to delete this medication and its schedule?')) {
+        setLoading(true);
+        await deleteMedication(medId);
+        toast({
+          title: "Medication deleted",
+          description: "The medication has been deleted successfully",
+          variant: "default",
+        });
+        await loadMedications();
+      }
+    } catch (error) {
+      console.error('Error deleting medication:', error);
+      toast({
+        title: "Delete Error",
+        description: "There was a problem deleting the medication",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+      setOpenMenuId(null);
+    }
   };
 
   if (loading) {
@@ -231,7 +280,7 @@ const ScheduleTab = ({ onAddMedicationClick }: ScheduleTabProps) => {
           </div>
         ) : (
           medications.map(med => (
-            <div key={med.id} className="bg-white rounded-xl shadow-md p-4 mb-4">
+            <div key={med.id} className="bg-white rounded-xl shadow-md p-4 mb-4 relative">
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
                   <div className="bg-primary p-3 rounded-full mr-3">
@@ -242,9 +291,41 @@ const ScheduleTab = ({ onAddMedicationClick }: ScheduleTabProps) => {
                     <p className="text-gray-600">{med.dosage} - {med.instructions || '1 tablet'}</p>
                   </div>
                 </div>
-                <button className="text-gray-500 p-2 hover:bg-gray-100 rounded-full">
+                <button 
+                  className="text-gray-500 p-2 hover:bg-gray-100 rounded-full"
+                  onClick={() => toggleMenu(med.id)}
+                >
                   <i className="fas fa-ellipsis-v"></i>
                 </button>
+                
+                {/* Dropdown Menu */}
+                {openMenuId === med.id && (
+                  <div 
+                    ref={menuRef}
+                    className="absolute right-2 top-12 bg-white shadow-lg rounded-lg z-10 min-w-[150px] py-2"
+                  >
+                    <button 
+                      className="flex items-center w-full px-4 py-2 text-left hover:bg-gray-100 text-gray-700"
+                      onClick={() => {
+                        // Edit functionality can be implemented later
+                        setOpenMenuId(null);
+                        toast({
+                          title: "Edit Coming Soon",
+                          description: "Editing will be available in a future update",
+                          variant: "default",
+                        });
+                      }}
+                    >
+                      <i className="fas fa-edit mr-2"></i> Edit
+                    </button>
+                    <button 
+                      className="flex items-center w-full px-4 py-2 text-left hover:bg-gray-100 text-red-600"
+                      onClick={() => handleDeleteMedication(med.id)}
+                    >
+                      <i className="fas fa-trash-alt mr-2"></i> Delete
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="mt-3 pl-12">
                 {med.schedules && med.schedules.length > 0 ? (
