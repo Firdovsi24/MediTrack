@@ -1,5 +1,6 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 import { Medication, Schedule, Dose } from '@shared/schema';
+import { getCurrentTime } from './timeUtils';
 
 interface MediRemindDB extends DBSchema {
   medications: {
