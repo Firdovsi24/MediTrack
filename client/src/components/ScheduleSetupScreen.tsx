@@ -147,8 +147,8 @@ const ScheduleSetupScreen = ({ medicationId, onBack, onComplete }: ScheduleSetup
   }
 
   return (
-    <div className="fixed inset-0 bg-white z-40">
-      <div className="container mx-auto px-4 py-6 max-w-md h-full flex flex-col">
+    <div className="fixed inset-0 bg-white z-40 overflow-y-auto">
+      <div className="container mx-auto px-4 py-6 max-w-md flex flex-col pb-20">
         <div className="flex items-center mb-6">
           <button onClick={onBack} className="p-2 mr-2">
             <i className="fas fa-arrow-left text-2xl"></i>

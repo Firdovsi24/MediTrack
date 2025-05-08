@@ -216,7 +216,7 @@ const AddMedicationScreen = ({ onBack, onContinueToSchedule }: AddMedicationScre
               </button>
               <button 
                 onClick={handleUploadClick}
-                className="flex-1 bg-secondary hover:bg-gray-600 text-white font-bold py-4 px-4 rounded-lg transition flex justify-center items-center"
+                className="flex-1 bg-gray-700 hover:bg-gray-800 text-white font-bold py-4 px-4 rounded-lg transition flex justify-center items-center"
                 disabled={isProcessing}
               >
                 <i className="fas fa-upload mr-2"></i> Upload Image
