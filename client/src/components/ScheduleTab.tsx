@@ -295,12 +295,21 @@ const ScheduleTab = ({ onAddMedicationClick }: ScheduleTabProps) => {
                     <p className="text-gray-600">{med.dosage} - {med.instructions || '1 tablet'}</p>
                   </div>
                 </div>
-                <button 
-                  className="text-gray-500 p-2 hover:bg-gray-100 rounded-full"
-                  onClick={() => toggleMenu(med.id)}
-                >
-                  <i className="fas fa-ellipsis-v"></i>
-                </button>
+                <div className="flex items-center">
+                  <button 
+                    className="text-red-600 p-2 hover:bg-red-50 rounded-full mr-1 flex items-center"
+                    onClick={() => handleDeleteMedication(med.id)}
+                    aria-label={`Delete ${med.name}`}
+                  >
+                    <i className="fas fa-trash-alt"></i>
+                  </button>
+                  <button 
+                    className="text-gray-500 p-2 hover:bg-gray-100 rounded-full"
+                    onClick={() => toggleMenu(med.id)}
+                  >
+                    <i className="fas fa-ellipsis-v"></i>
+                  </button>
+                </div>
                 
                 {/* Dropdown Menu */}
                 {openMenuId === med.id && (
@@ -351,12 +360,53 @@ const ScheduleTab = ({ onAddMedicationClick }: ScheduleTabProps) => {
           ))
         )}
         
-        <button 
-          onClick={onAddMedicationClick}
-          className="w-full bg-primary hover:bg-blue-600 text-white font-bold py-4 px-4 rounded-lg text-xl mt-4 transition flex justify-center items-center"
-        >
-          <i className="fas fa-plus mr-2"></i> Add Medication
-        </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <button 
+            onClick={onAddMedicationClick}
+            className="bg-primary hover:bg-blue-600 text-white font-bold py-4 px-4 rounded-lg text-xl transition flex justify-center items-center"
+          >
+            <i className="fas fa-plus mr-2"></i> Add Medication
+          </button>
+          
+          {medications.length > 0 && (
+            <button 
+              onClick={() => {
+                if (confirm('Are you sure you want to delete ALL medications? This cannot be undone.')) {
+                  // Create promise array to delete all medications
+                  const deletePromises = medications.map(med => deleteMedication(med.id));
+                  
+                  // Show loading state
+                  setLoading(true);
+                  
+                  // Delete all medications
+                  Promise.all(deletePromises)
+                    .then(() => {
+                      toast({
+                        title: "All medications deleted",
+                        description: "All your medications have been removed",
+                        variant: "default",
+                      });
+                      loadMedications();
+                    })
+                    .catch(error => {
+                      console.error('Error deleting all medications:', error);
+                      toast({
+                        title: "Delete Error",
+                        description: "There was a problem deleting the medications",
+                        variant: "destructive",
+                      });
+                    })
+                    .finally(() => {
+                      setLoading(false);
+                    });
+                }
+              }}
+              className="bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-4 rounded-lg text-xl transition flex justify-center items-center"
+            >
+              <i className="fas fa-trash-alt mr-2"></i> Delete All Medications
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

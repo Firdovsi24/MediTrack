@@ -404,3 +404,40 @@ export async function clearAllData() {
   await tx.done;
   return true;
 }
+
+// Clear all history (doses)
+export async function clearAllHistory() {
+  const db = await getDB();
+  const tx = db.transaction(['doses'], 'readwrite');
+  
+  // Get all doses
+  const doses = await db.getAll('doses');
+  
+  // Delete taken and missed doses
+  for (const dose of doses) {
+    if (dose.status === 'taken' || dose.status === 'missed') {
+      await tx.objectStore('doses').delete(dose.id);
+    }
+  }
+  
+  await tx.done;
+  return true;
+}
+
+// Delete doses by date range
+export async function deleteDosesByDateRange(startDate: Date, endDate: Date) {
+  const db = await getDB();
+  const doses = await db.getAll('doses');
+  
+  // Filter doses by date range
+  const dosesToDelete = doses.filter(dose => 
+    dose.scheduledTime >= startDate && dose.scheduledTime <= endDate
+  );
+  
+  // Delete filtered doses
+  for (const dose of dosesToDelete) {
+    await db.delete('doses', dose.id);
+  }
+  
+  return dosesToDelete.length;
+}
