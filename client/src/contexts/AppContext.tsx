@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { getAllMedications, getDosesForDay, getMedication, updateDose, getSettings, getDose } from '@/lib/storage';
 import { checkNotificationSupport, requestNotificationPermission, scheduleNotifications } from '@/lib/notifications';
 import { notifyCaregiverAutomatically } from '@/lib/emailService';
-import { playConfirmationSound, playNotificationSound } from '@/lib/soundUtils';
+import { playSound } from '@/lib/soundUtils';
 
 interface AppContextType {
   isHighContrast: boolean;
@@ -19,6 +19,10 @@ interface AppContextType {
   notifyCaregiverEnabled: boolean;
   caregiverEmail: string;
   userName: string;
+  // Sound settings
+  volume: number;
+  notificationSoundKey: string;
+  confirmationSoundKey: string;
 }
 
 const AppContext = createContext<AppContextType>({
@@ -53,6 +57,10 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   const [notifyCaregiverEnabled, setNotifyCaregiverEnabled] = useState(false);
   const [caregiverEmail, setCaregiverEmail] = useState('');
   const [userName, setUserName] = useState('');
+  // Sound settings
+  const [volume, setVolume] = useState(0.8);
+  const [notificationSoundKey, setNotificationSoundKey] = useState('notification');
+  const [confirmationSoundKey, setConfirmationSoundKey] = useState('confirmation');
 
   useEffect(() => {
     loadSettings();
@@ -81,6 +89,15 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       setNotifyCaregiverEnabled(settings.notifyCaregiverEnabled || false);
       setCaregiverEmail(settings.caregiverEmail || '');
       setUserName(settings.userName || '');
+      
+      // Load sound settings
+      setVolume(settings.volume || 0.8);
+      if (settings.notificationSoundKey) {
+        setNotificationSoundKey(settings.notificationSoundKey);
+      }
+      if (settings.confirmationSoundKey) {
+        setConfirmationSoundKey(settings.confirmationSoundKey);
+      }
     } catch (error) {
       console.error('Error loading settings:', error);
     }
@@ -146,10 +163,10 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       
       const currentTime = new Date();
       
-      // Play confirmation sound using our utility function
-      playConfirmationSound()
+      // Play confirmation sound using our utility function with custom settings
+      playSound(confirmationSoundKey as any, volume)
         .then(() => console.log('Medication taken confirmation sound played successfully'))
-        .catch(error => console.warn('Could not play confirmation sound:', error));
+        .catch((error: Error) => console.warn('Could not play confirmation sound:', error));
       
       await updateDose(doseId, {
         status: 'taken',
@@ -227,10 +244,10 @@ export const AppProvider = ({ children }: AppProviderProps) => {
               if (medDose) {
                 const medicationDetails = medDose.medication || await getMedication(medDose.medicationId);
                 if (medicationDetails) {
-                  // Play notification sound for snooze reminder using our utility function
-                  playNotificationSound()
+                  // Play notification sound for snooze reminder using our utility function with custom settings
+                  playSound(notificationSoundKey as any, volume)
                     .then(() => console.log('Snoozed medication reminder notification sound played'))
-                    .catch(error => console.warn('Failed to play snoozed reminder sound:', error));
+                    .catch((error: Error) => console.warn('Failed to play snoozed reminder sound:', error));
                   
                   // Show in-app notification
                   // This would be handled by the component that shows the medication notification
@@ -276,7 +293,11 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       snoozeDose,
       notifyCaregiverEnabled,
       caregiverEmail,
-      userName
+      userName,
+      // Sound settings
+      volume,
+      notificationSoundKey,
+      confirmationSoundKey
     }}>
       {children}
     </AppContext.Provider>

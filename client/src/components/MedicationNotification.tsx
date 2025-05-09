@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { updateDose } from '@/lib/storage';
-import { playNotificationSound, playConfirmationSound } from '@/lib/soundUtils';
+import { updateDose, getSettings } from '@/lib/storage';
+import { playSound } from '@/lib/soundUtils';
+import { useAppContext } from '@/contexts/AppContext';
 
 interface MedicationNotificationProps {
   dose: {
@@ -22,12 +23,37 @@ const MedicationNotification = ({
   onClose 
 }: MedicationNotificationProps) => {
   const [isVisible, setIsVisible] = useState(true);
+  const [volume, setVolume] = useState(0.8);
+  const [confirmationSoundKey, setConfirmationSoundKey] = useState('confirmation');
+  const [notificationSoundKey, setNotificationSoundKey] = useState('notification');
+
+  // Load sound settings when component mounts
+  useEffect(() => {
+    const loadSoundSettings = async () => {
+      try {
+        const settings = await getSettings();
+        if (settings) {
+          setVolume(settings.volume || 0.8);
+          if (settings.confirmationSoundKey) {
+            setConfirmationSoundKey(settings.confirmationSoundKey);
+          }
+          if (settings.notificationSoundKey) {
+            setNotificationSoundKey(settings.notificationSoundKey);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading sound settings:', error);
+      }
+    };
+    
+    loadSoundSettings();
+  }, []);
 
   const handleConfirm = () => {
-    // Play confirmation sound when medication is taken
-    playConfirmationSound()
+    // Play confirmation sound when medication is taken using settings
+    playSound(confirmationSoundKey as any, volume)
       .then(() => console.log('Medication confirmation sound played'))
-      .catch(error => console.warn('Failed to play confirmation sound:', error));
+      .catch((error: Error) => console.warn('Failed to play confirmation sound:', error));
       
     onConfirm(dose.id);
     setIsVisible(false);
@@ -44,10 +70,10 @@ const MedicationNotification = ({
   };
 
   useEffect(() => {
-    // Play notification sound when the component mounts
-    playNotificationSound()
+    // Play notification sound when the component mounts using settings
+    playSound(notificationSoundKey as any, volume)
       .then(() => console.log('Medication reminder notification sound played in modal'))
-      .catch(error => console.warn('Failed to play notification sound in modal:', error));
+      .catch((error: Error) => console.warn('Failed to play notification sound in modal:', error));
     
     // Auto-hide notification after 60 seconds if no action is taken
     const timer = setTimeout(() => {
@@ -56,7 +82,7 @@ const MedicationNotification = ({
     }, 60000);
 
     return () => clearTimeout(timer);
-  }, [onClose]);
+  }, [onClose, notificationSoundKey, volume]);
 
   if (!isVisible) return null;
 
