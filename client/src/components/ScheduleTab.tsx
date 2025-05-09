@@ -353,15 +353,7 @@ const ScheduleTab = ({ onAddMedicationClick }: ScheduleTabProps) => {
                   >
                     <button 
                       className="flex items-center w-full px-4 py-2 text-left hover:bg-gray-100 text-gray-700"
-                      onClick={() => {
-                        // Edit functionality can be implemented later
-                        setOpenMenuId(null);
-                        toast({
-                          title: "Edit Coming Soon",
-                          description: "Editing will be available in a future update",
-                          variant: "default",
-                        });
-                      }}
+                      onClick={() => handleEditMedication(med)}
                     >
                       <i className="fas fa-edit mr-2"></i> Edit
                     </button>
@@ -442,6 +434,101 @@ const ScheduleTab = ({ onAddMedicationClick }: ScheduleTabProps) => {
           )}
         </div>
       </div>
+      
+      {/* Edit Medication Form */}
+      {showEditForm && editingMedication && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold">Edit Medication</h2>
+                <button 
+                  onClick={() => {
+                    setShowEditForm(false);
+                    setEditingMedication(null);
+                  }}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <i className="fas fa-times text-xl"></i>
+                </button>
+              </div>
+              
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                const updatedData = {
+                  name: formData.get('name') as string,
+                  dosage: formData.get('dosage') as string,
+                  instructions: formData.get('instructions') as string,
+                };
+                
+                handleSaveEdit(updatedData);
+              }}>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+                      Medication Name
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      defaultValue={editingMedication.name}
+                      required
+                      className="shadow-sm rounded-lg w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="dosage">
+                      Dosage
+                    </label>
+                    <input
+                      type="text"
+                      id="dosage"
+                      name="dosage"
+                      defaultValue={editingMedication.dosage}
+                      className="shadow-sm rounded-lg w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="instructions">
+                      Instructions
+                    </label>
+                    <textarea
+                      id="instructions"
+                      name="instructions"
+                      defaultValue={editingMedication.instructions}
+                      className="shadow-sm rounded-lg w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
+                      rows={3}
+                    ></textarea>
+                  </div>
+                  
+                  <div className="flex justify-end mt-6 space-x-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowEditForm(false);
+                        setEditingMedication(null);
+                      }}
+                      className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="bg-primary hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg"
+                    >
+                      Save Changes
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
