@@ -207,7 +207,7 @@ const SettingsScreen = ({ onBack }: SettingsScreenProps) => {
           <h2 className="text-2xl font-bold">Settings</h2>
         </div>
         
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto px-4">
           <div className="border-b border-gray-300 py-4">
             <h3 className="text-xl font-semibold mb-2">Notifications</h3>
             <div className="flex items-center justify-between">

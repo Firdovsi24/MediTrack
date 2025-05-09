@@ -156,7 +156,7 @@ const ScheduleSetupScreen = ({ medicationId, onBack, onComplete }: ScheduleSetup
           <h2 className="text-2xl font-bold">Set Schedule</h2>
         </div>
         
-        <div className="flex-1 overflow-y-auto pb-24">
+        <div className="flex-1 overflow-y-auto pb-24 px-4">
           <div className="bg-gray-100 rounded-xl p-4 mb-6">
             <h3 className="text-xl font-semibold">{medication?.name || 'Medication'}</h3>
             <p className="text-gray-600">{medication?.dosage || ''} - {medication?.instructions || '1 tablet daily'}</p>
