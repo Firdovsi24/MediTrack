@@ -100,7 +100,7 @@ const SoundSettingsScreen = ({ onBack }: SoundSettingsScreenProps) => {
           </button>
         </div>
         
-        <div className="flex-1 overflow-y-auto pb-24">
+        <div className="flex-1 overflow-y-auto pb-24 pl-4 pr-6">
           <div className="mb-6">
             <label className="block text-lg font-medium mb-2">Volume: {Math.round(volume * 100)}%</label>
             <input

@@ -204,7 +204,7 @@ const AddMedicationScreen = ({ onBack, onContinueToSchedule }: AddMedicationScre
           <h2 className="text-2xl font-bold">Add Medication</h2>
         </div>
         
-        <div className="flex-1 overflow-y-auto pb-24 px-4">
+        <div className="flex-1 overflow-y-auto pb-24 pl-4 pr-6">
           {!isManualEntry && (
             <>
               <div className="flex space-x-4 mb-6">
