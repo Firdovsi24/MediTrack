@@ -145,6 +145,33 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       
       const currentTime = new Date();
       
+      // Play a confirmation sound
+      try {
+        const audio = new Audio('/confirmation-sound.mp3');
+        
+        // Set up audio properties
+        audio.volume = 0.7; // Set volume to 70%
+        audio.loop = false;
+        
+        // Make sure the audio is loaded before playing
+        audio.addEventListener('canplaythrough', () => {
+          const playPromise = audio.play();
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => console.log('Confirmation sound played successfully'))
+              .catch(error => console.warn('Could not play confirmation sound:', error));
+          }
+        });
+        
+        // Handle loading errors
+        audio.addEventListener('error', (e) => {
+          console.error('Error loading confirmation sound:', e);
+        });
+        
+      } catch (error) {
+        console.warn('Could not create audio element:', error);
+      }
+      
       await updateDose(doseId, {
         status: 'taken',
         actualTime: currentTime
@@ -224,7 +251,22 @@ export const AppProvider = ({ children }: AppProviderProps) => {
                   // Play sound and show notification
                   const audio = new Audio('/notification-sound.mp3');
                   audio.volume = 0.7;
-                  audio.play().catch(err => console.warn('Could not play snooze reminder sound:', err));
+                  audio.loop = false;
+                  
+                  // Make sure the audio is loaded before playing
+                  audio.addEventListener('canplaythrough', () => {
+                    const playPromise = audio.play();
+                    if (playPromise !== undefined) {
+                      playPromise
+                        .then(() => console.log('Snooze reminder sound played successfully'))
+                        .catch(error => console.warn('Could not play snooze reminder sound:', error));
+                    }
+                  });
+                  
+                  // Handle loading errors
+                  audio.addEventListener('error', (e) => {
+                    console.error('Error loading snooze reminder sound:', e);
+                  });
                   
                   // Show in-app notification
                   // This would be handled by the component that shows the medication notification
