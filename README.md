@@ -72,7 +72,7 @@ MediTrack addresses the challenges many seniors face with medication adherence:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/meditrack.git
+   git clone https://github.com/Firdovsi24/MediTrack
    cd meditrack
    ```
 
@@ -84,8 +84,8 @@ MediTrack addresses the challenges many seniors face with medication adherence:
 3. Configure environment variables:
    Create a `.env` file in the root directory with:
    ```
-   GEMINI_API_KEY=your_gemini_api_key
-   SENDGRID_API_KEY=your_sendgrid_api_key
+   GEMINI_API_KEY=##############
+   SENDGRID_API_KEY=##############
    SENDGRID_FROM_EMAIL=your_verified_sender_email
    ```
 
