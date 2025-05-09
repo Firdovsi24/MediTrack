@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { getAllMedications, getDosesForDay, getMedication, updateDose, getSettings, getDose } from '@/lib/storage';
 import { checkNotificationSupport, requestNotificationPermission, scheduleNotifications } from '@/lib/notifications';
 import { notifyCaregiverAutomatically } from '@/lib/emailService';
+import { playConfirmationSound, playNotificationSound } from '@/lib/soundUtils';
 
 interface AppContextType {
   isHighContrast: boolean;
@@ -145,26 +146,10 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       
       const currentTime = new Date();
       
-      // Play a gentle piano confirmation sound 
-      try {
-        // Use a preloaded audio object to ensure it plays immediately
-        const audio = new Audio();
-        audio.src = '/sounds/piano-confirmation.mp3'; // Gentle piano confirmation sound
-        audio.volume = 0.8; // Slightly higher volume for better audibility for seniors
-        audio.loop = false;
-        
-        // Force the audio to load before playing
-        audio.load();
-        
-        // Play directly
-        audio.play()
-          .then(() => console.log('Confirmation sound played successfully'))
-          .catch(error => {
-            console.warn('Could not play confirmation sound:', error);
-          });
-      } catch (error) {
-        console.warn('Could not create audio element:', error);
-      }
+      // Play confirmation sound using our utility function
+      playConfirmationSound()
+        .then(() => console.log('Medication taken confirmation sound played successfully'))
+        .catch(error => console.warn('Could not play confirmation sound:', error));
       
       await updateDose(doseId, {
         status: 'taken',
@@ -242,43 +227,10 @@ export const AppProvider = ({ children }: AppProviderProps) => {
               if (medDose) {
                 const medicationDetails = medDose.medication || await getMedication(medDose.medicationId);
                 if (medicationDetails) {
-                  // Play a gentle piano notification sound for snooze reminder
-                  try {
-                    // Use a preloaded audio object to ensure it plays immediately
-                    const audio = new Audio();
-                    audio.src = '/sounds/soft-notification2.mp3'; // Gentle notification sound
-                    audio.volume = 0.8; // Slightly higher volume for better audibility for seniors
-                    audio.loop = false;
-                    
-                    // Force the audio to load before playing
-                    audio.load();
-                    
-                    // Play immediately after page interaction
-                    const playSound = () => {
-                      audio.play()
-                        .then(() => {
-                          console.log('Snooze reminder sound played successfully');
-                          // Clean up event listeners
-                          document.removeEventListener('click', playSound);
-                          document.removeEventListener('keydown', playSound);
-                        })
-                        .catch(error => {
-                          console.warn('Could not play snooze reminder sound:', error);
-                        });
-                    };
-                    
-                    // Try to play immediately
-                    audio.play()
-                      .then(() => console.log('Snooze reminder sound played successfully'))
-                      .catch(err => {
-                        console.warn('Auto-play prevented for snooze reminder. Will play on user interaction:', err);
-                        // Add event listeners to play on first user interaction (browsers require this)
-                        document.addEventListener('click', playSound, { once: true });
-                        document.addEventListener('keydown', playSound, { once: true });
-                      });
-                  } catch (error) {
-                    console.warn('Could not create audio element for snooze reminder:', error);
-                  }
+                  // Play notification sound for snooze reminder using our utility function
+                  playNotificationSound()
+                    .then(() => console.log('Snoozed medication reminder notification sound played'))
+                    .catch(error => console.warn('Failed to play snoozed reminder sound:', error));
                   
                   // Show in-app notification
                   // This would be handled by the component that shows the medication notification

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { updateDose } from '@/lib/storage';
+import { playNotificationSound, playConfirmationSound } from '@/lib/soundUtils';
 
 interface MedicationNotificationProps {
   dose: {
@@ -23,6 +24,11 @@ const MedicationNotification = ({
   const [isVisible, setIsVisible] = useState(true);
 
   const handleConfirm = () => {
+    // Play confirmation sound when medication is taken
+    playConfirmationSound()
+      .then(() => console.log('Medication confirmation sound played'))
+      .catch(error => console.warn('Failed to play confirmation sound:', error));
+      
     onConfirm(dose.id);
     setIsVisible(false);
   };
@@ -38,6 +44,11 @@ const MedicationNotification = ({
   };
 
   useEffect(() => {
+    // Play notification sound when the component mounts
+    playNotificationSound()
+      .then(() => console.log('Medication reminder notification sound played in modal'))
+      .catch(error => console.warn('Failed to play notification sound in modal:', error));
+    
     // Auto-hide notification after 60 seconds if no action is taken
     const timer = setTimeout(() => {
       setIsVisible(false);
