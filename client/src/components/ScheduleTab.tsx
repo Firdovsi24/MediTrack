@@ -173,7 +173,7 @@ const ScheduleTab = ({ onAddMedicationClick }: ScheduleTabProps) => {
   }
 
   return (
-    <div className="tab-content">
+    <div className="tab-content overflow-y-auto">
       <div className="mb-6">
         <h2 className="text-2xl font-bold mb-4">Weekly Schedule</h2>
         

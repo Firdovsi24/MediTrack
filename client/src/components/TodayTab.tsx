@@ -137,7 +137,7 @@ const TodayTab = ({ onAddMedicationClick }: TodayTabProps) => {
   }
 
   return (
-    <div className="tab-content">
+    <div className="tab-content overflow-y-auto">
       {nextDose ? (
         <div className="bg-white rounded-xl shadow-md p-6 mb-6">
           <div className="flex justify-between items-start mb-4">

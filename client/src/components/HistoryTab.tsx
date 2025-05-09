@@ -206,7 +206,7 @@ const HistoryTab = ({}: HistoryTabProps) => {
   }
 
   return (
-    <div className="tab-content">
+    <div className="tab-content overflow-y-auto">
       <h2 className="text-2xl font-bold mb-4">Medication History</h2>
       
       {Object.keys(historyData).length === 0 ? (
