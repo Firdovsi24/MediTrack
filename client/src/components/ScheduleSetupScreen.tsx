@@ -147,8 +147,8 @@ const ScheduleSetupScreen = ({ medicationId, onBack, onComplete }: ScheduleSetup
   }
 
   return (
-    <div className="fixed inset-0 bg-white z-40 overflow-y-auto">
-      <div className="container mx-auto px-4 py-6 max-w-md flex flex-col pb-20">
+    <div className="fixed inset-0 bg-white z-40">
+      <div className="container mx-auto px-4 py-6 max-w-md h-full flex flex-col">
         <div className="flex items-center mb-6">
           <button onClick={onBack} className="p-2 mr-2">
             <i className="fas fa-arrow-left text-2xl"></i>
@@ -156,191 +156,193 @@ const ScheduleSetupScreen = ({ medicationId, onBack, onComplete }: ScheduleSetup
           <h2 className="text-2xl font-bold">Set Schedule</h2>
         </div>
         
-        <div className="bg-gray-100 rounded-xl p-4 mb-6">
-          <h3 className="text-xl font-semibold">{medication?.name || 'Medication'}</h3>
-          <p className="text-gray-600">{medication?.dosage || ''} - {medication?.instructions || '1 tablet daily'}</p>
-        </div>
-        
-        <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col">
-          <div className="mb-4">
-            <label className="block text-lg font-medium mb-2">Frequency</label>
-            <div className="border-2 border-gray-300 rounded-lg overflow-hidden">
-              <select 
-                {...register("frequency")}
-                className="w-full px-4 py-3 text-lg appearance-none"
-              >
-                <option value="daily">Every day</option>
-                <option value="multiple_daily">Multiple times per day</option>
-                <option value="specific_days">Specific days of week</option>
-                <option value="every_x_days">Every X days</option>
-                <option value="as_needed">As needed</option>
-              </select>
-            </div>
-            {errors.frequency && (
-              <p className="text-destructive text-sm mt-1">{errors.frequency.message}</p>
-            )}
+        <div className="flex-1 overflow-y-auto pb-24">
+          <div className="bg-gray-100 rounded-xl p-4 mb-6">
+            <h3 className="text-xl font-semibold">{medication?.name || 'Medication'}</h3>
+            <p className="text-gray-600">{medication?.dosage || ''} - {medication?.instructions || '1 tablet daily'}</p>
           </div>
           
-          <div className="mb-4">
-            <label className="block text-lg font-medium mb-2">Time of Day</label>
-            <div className="border-2 border-gray-300 rounded-lg overflow-hidden">
-              <input 
-                type="time" 
-                {...register("times.0")}
-                className="w-full px-4 py-3 text-lg"
-                defaultValue="08:00"
-              />
-            </div>
-            {errors.times && (
-              <p className="text-destructive text-sm mt-1">{errors.times.message}</p>
-            )}
-          </div>
-          
-          <div className="mb-4">
-            <label className="block text-lg font-medium mb-2">Start Date</label>
-            <div className="border-2 border-gray-300 rounded-lg overflow-hidden">
-              <input 
-                type="date" 
-                {...register("startDate")}
-                className="w-full px-4 py-3 text-lg"
-                min={format(new Date(), 'yyyy-MM-dd')}
-              />
-            </div>
-            {errors.startDate && (
-              <p className="text-destructive text-sm mt-1">{errors.startDate.message}</p>
-            )}
-          </div>
-          
-          <div className="mb-4">
-            <label className="block text-lg font-medium mb-2">End Date (Optional)</label>
-            <div className="border-2 border-gray-300 rounded-lg overflow-hidden">
-              <input 
-                type="date" 
-                {...register("endDate")}
-                className="w-full px-4 py-3 text-lg"
-                min={format(new Date(), 'yyyy-MM-dd')}
-              />
-            </div>
-          </div>
-          
-          <div className="mb-4">
-            <label className="block text-lg font-medium mb-2">Reminder</label>
-            <div className="flex items-center">
-              <input 
-                type="checkbox" 
-                {...register("enableReminders")}
-                id="reminder-toggle" 
-                className="h-6 w-6 mr-2"
-              />
-              <span>Send notification reminders</span>
-            </div>
-          </div>
-          
-          {/* Additional Times (for "Multiple times per day") */}
-          {frequency === "multiple_daily" && (
+          <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col">
             <div className="mb-4">
-              <label className="block text-lg font-medium mb-2">Additional Times</label>
-              {additionalTimes.map((time, index) => (
-                <div key={index} className="flex items-center mb-2">
-                  <input
-                    type="time"
-                    value={time}
-                    onChange={(e) => {
-                      const newTimes = [...additionalTimes];
-                      newTimes[index] = e.target.value;
-                      setAdditionalTimes(newTimes);
-                    }}
-                    className="flex-1 border-2 border-gray-300 rounded-lg px-4 py-3 text-lg"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeTime(index)}
-                    className="ml-2 text-danger p-2 hover:bg-gray-100 rounded-full"
-                  >
-                    <i className="fas fa-times"></i>
-                  </button>
+              <label className="block text-lg font-medium mb-2">Frequency</label>
+              <div className="border-2 border-gray-300 rounded-lg overflow-hidden">
+                <select 
+                  {...register("frequency")}
+                  className="w-full px-4 py-3 text-lg appearance-none"
+                >
+                  <option value="daily">Every day</option>
+                  <option value="multiple_daily">Multiple times per day</option>
+                  <option value="specific_days">Specific days of week</option>
+                  <option value="every_x_days">Every X days</option>
+                  <option value="as_needed">As needed</option>
+                </select>
+              </div>
+              {errors.frequency && (
+                <p className="text-destructive text-sm mt-1">{errors.frequency.message}</p>
+              )}
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-lg font-medium mb-2">Time of Day</label>
+              <div className="border-2 border-gray-300 rounded-lg overflow-hidden">
+                <input 
+                  type="time" 
+                  {...register("times.0")}
+                  className="w-full px-4 py-3 text-lg"
+                  defaultValue="08:00"
+                />
+              </div>
+              {errors.times && (
+                <p className="text-destructive text-sm mt-1">{errors.times.message}</p>
+              )}
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-lg font-medium mb-2">Start Date</label>
+              <div className="border-2 border-gray-300 rounded-lg overflow-hidden">
+                <input 
+                  type="date" 
+                  {...register("startDate")}
+                  className="w-full px-4 py-3 text-lg"
+                  min={format(new Date(), 'yyyy-MM-dd')}
+                />
+              </div>
+              {errors.startDate && (
+                <p className="text-destructive text-sm mt-1">{errors.startDate.message}</p>
+              )}
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-lg font-medium mb-2">End Date (Optional)</label>
+              <div className="border-2 border-gray-300 rounded-lg overflow-hidden">
+                <input 
+                  type="date" 
+                  {...register("endDate")}
+                  className="w-full px-4 py-3 text-lg"
+                  min={format(new Date(), 'yyyy-MM-dd')}
+                />
+              </div>
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-lg font-medium mb-2">Reminder</label>
+              <div className="flex items-center">
+                <input 
+                  type="checkbox" 
+                  {...register("enableReminders")}
+                  id="reminder-toggle" 
+                  className="h-6 w-6 mr-2"
+                />
+                <span>Send notification reminders</span>
+              </div>
+            </div>
+            
+            {/* Additional Times (for "Multiple times per day") */}
+            {frequency === "multiple_daily" && (
+              <div className="mb-4">
+                <label className="block text-lg font-medium mb-2">Additional Times</label>
+                {additionalTimes.map((time, index) => (
+                  <div key={index} className="flex items-center mb-2">
+                    <input
+                      type="time"
+                      value={time}
+                      onChange={(e) => {
+                        const newTimes = [...additionalTimes];
+                        newTimes[index] = e.target.value;
+                        setAdditionalTimes(newTimes);
+                      }}
+                      className="flex-1 border-2 border-gray-300 rounded-lg px-4 py-3 text-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeTime(index)}
+                      className="ml-2 text-danger p-2 hover:bg-gray-100 rounded-full"
+                    >
+                      <i className="fas fa-times"></i>
+                    </button>
+                  </div>
+                ))}
+                
+                <button
+                  type="button"
+                  onClick={addTime}
+                  className="text-primary font-medium flex items-center mt-2"
+                >
+                  <i className="fas fa-plus mr-2"></i> Add Another Time
+                </button>
+              </div>
+            )}
+            
+            {/* Specific Days (for "Specific days of week") */}
+            {frequency === "specific_days" && (
+              <div className="mb-4">
+                <label className="block text-lg font-medium mb-2">Select Days</label>
+                <div className="flex flex-wrap gap-2">
+                  {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, index) => {
+                    const selectedDays = watch("specificDays") || [];
+                    const isSelected = selectedDays.includes(index);
+                    
+                    return (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() => toggleDay(index)}
+                        className={`day-toggle font-medium py-2 px-4 rounded-lg ${
+                          isSelected
+                            ? 'bg-primary text-white'
+                            : 'bg-white border-2 border-gray-300'
+                        }`}
+                      >
+                        {day}
+                      </button>
+                    );
+                  })}
                 </div>
-              ))}
-              
+                {errors.specificDays && (
+                  <p className="text-destructive text-sm mt-1">{errors.specificDays.message}</p>
+                )}
+              </div>
+            )}
+            
+            {/* Every X Days */}
+            {frequency === "every_x_days" && (
+              <div className="mb-4">
+                <label className="block text-lg font-medium mb-2">Repeat every</label>
+                <div className="flex items-center">
+                  <input
+                    type="number"
+                    {...register("everyXDays", { valueAsNumber: true })}
+                    min="1"
+                    max="365"
+                    className="w-20 border-2 border-gray-300 rounded-lg px-4 py-3 text-lg mr-2"
+                    defaultValue="1"
+                  />
+                  <span className="text-lg">days</span>
+                </div>
+                {errors.everyXDays && (
+                  <p className="text-destructive text-sm mt-1">{errors.everyXDays.message}</p>
+                )}
+              </div>
+            )}
+            
+            <div className="mt-auto">
               <button
-                type="button"
-                onClick={addTime}
-                className="text-primary font-medium flex items-center mt-2"
+                type="submit"
+                disabled={saving}
+                className="w-full bg-primary hover:bg-blue-600 text-white font-bold py-4 px-4 rounded-lg text-xl transition flex justify-center items-center"
               >
-                <i className="fas fa-plus mr-2"></i> Add Another Time
+                {saving ? (
+                  <>
+                    <span className="mr-2 animate-spin h-5 w-5 border-t-2 border-b-2 border-white rounded-full"></span>
+                    Saving...
+                  </>
+                ) : (
+                  "Save Medication"
+                )}
               </button>
             </div>
-          )}
-          
-          {/* Specific Days (for "Specific days of week") */}
-          {frequency === "specific_days" && (
-            <div className="mb-4">
-              <label className="block text-lg font-medium mb-2">Select Days</label>
-              <div className="flex flex-wrap gap-2">
-                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, index) => {
-                  const selectedDays = watch("specificDays") || [];
-                  const isSelected = selectedDays.includes(index);
-                  
-                  return (
-                    <button
-                      key={day}
-                      type="button"
-                      onClick={() => toggleDay(index)}
-                      className={`day-toggle font-medium py-2 px-4 rounded-lg ${
-                        isSelected
-                          ? 'bg-primary text-white'
-                          : 'bg-white border-2 border-gray-300'
-                      }`}
-                    >
-                      {day}
-                    </button>
-                  );
-                })}
-              </div>
-              {errors.specificDays && (
-                <p className="text-destructive text-sm mt-1">{errors.specificDays.message}</p>
-              )}
-            </div>
-          )}
-          
-          {/* Every X Days */}
-          {frequency === "every_x_days" && (
-            <div className="mb-4">
-              <label className="block text-lg font-medium mb-2">Repeat every</label>
-              <div className="flex items-center">
-                <input
-                  type="number"
-                  {...register("everyXDays", { valueAsNumber: true })}
-                  min="1"
-                  max="365"
-                  className="w-20 border-2 border-gray-300 rounded-lg px-4 py-3 text-lg mr-2"
-                  defaultValue="1"
-                />
-                <span className="text-lg">days</span>
-              </div>
-              {errors.everyXDays && (
-                <p className="text-destructive text-sm mt-1">{errors.everyXDays.message}</p>
-              )}
-            </div>
-          )}
-          
-          <div className="mt-auto">
-            <button
-              type="submit"
-              disabled={saving}
-              className="w-full bg-primary hover:bg-blue-600 text-white font-bold py-4 px-4 rounded-lg text-xl transition flex justify-center items-center"
-            >
-              {saving ? (
-                <>
-                  <span className="mr-2 animate-spin h-5 w-5 border-t-2 border-b-2 border-white rounded-full"></span>
-                  Saving...
-                </>
-              ) : (
-                "Save Medication"
-              )}
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );
