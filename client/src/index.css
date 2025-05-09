@@ -69,7 +69,7 @@
 
 /* Tab-specific content containers */
 .tab-content {
-  padding-bottom: 100px; /* Extra padding at bottom for better scrolling on small screens */
+  padding: 0 16px 100px 16px; /* Add horizontal padding plus bottom padding */
   -webkit-overflow-scrolling: touch;
   height: 100%;
   display: flex;
