@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getMedication, getAllDoses } from "@/lib/storage";
+import { getMedication, getAllDoses, clearAllHistory } from "@/lib/storage";
 import { format, isSameDay, subDays } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 
@@ -273,12 +273,48 @@ const HistoryTab = ({}: HistoryTabProps) => {
         })
       )}
       
-      <button 
-        onClick={exportHistory}
-        className="w-full bg-secondary hover:bg-gray-600 text-white font-bold py-4 px-4 rounded-lg text-xl transition flex justify-center items-center"
-      >
-        <i className="fas fa-download mr-2"></i> Export History
-      </button>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <button 
+          onClick={exportHistory}
+          className="bg-secondary hover:bg-gray-600 text-white font-bold py-4 px-4 rounded-lg text-xl transition flex justify-center items-center"
+        >
+          <i className="fas fa-download mr-2"></i> Export History
+        </button>
+        
+        {Object.keys(historyData).length > 0 && (
+          <button 
+            onClick={async () => {
+              if (confirm('Are you sure you want to clear all medication history? This cannot be undone.')) {
+                try {
+                  setLoading(true);
+                  await clearAllHistory();
+                  
+                  toast({
+                    title: "History cleared",
+                    description: "Your medication history has been deleted",
+                    variant: "default",
+                  });
+                  
+                  // Reload history data
+                  await loadHistoryData();
+                } catch (error) {
+                  console.error('Error clearing history:', error);
+                  toast({
+                    title: "Clear failed",
+                    description: "There was a problem clearing your history",
+                    variant: "destructive",
+                  });
+                } finally {
+                  setLoading(false);
+                }
+              }
+            }}
+            className="bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-4 rounded-lg text-xl transition flex justify-center items-center"
+          >
+            <i className="fas fa-trash-alt mr-2"></i> Clear History
+          </button>
+        )}
+      </div>
     </div>
   );
 };
