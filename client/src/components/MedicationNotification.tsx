@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { updateDose, getSettings } from '@/lib/storage';
+import { updateDose } from '@/lib/storage';
 import { playSound } from '@/lib/soundUtils';
 import { useAppContext } from '@/contexts/AppContext';
 
@@ -23,31 +23,7 @@ const MedicationNotification = ({
   onClose 
 }: MedicationNotificationProps) => {
   const [isVisible, setIsVisible] = useState(true);
-  const [volume, setVolume] = useState(0.8);
-  const [confirmationSoundKey, setConfirmationSoundKey] = useState('confirmation');
-  const [notificationSoundKey, setNotificationSoundKey] = useState('notification');
-
-  // Load sound settings when component mounts
-  useEffect(() => {
-    const loadSoundSettings = async () => {
-      try {
-        const settings = await getSettings();
-        if (settings) {
-          setVolume(settings.volume || 0.8);
-          if (settings.confirmationSoundKey) {
-            setConfirmationSoundKey(settings.confirmationSoundKey);
-          }
-          if (settings.notificationSoundKey) {
-            setNotificationSoundKey(settings.notificationSoundKey);
-          }
-        }
-      } catch (error) {
-        console.error('Error loading sound settings:', error);
-      }
-    };
-    
-    loadSoundSettings();
-  }, []);
+  const { volume, confirmationSoundKey, notificationSoundKey } = useAppContext();
 
   const handleConfirm = () => {
     // Play confirmation sound when medication is taken using settings

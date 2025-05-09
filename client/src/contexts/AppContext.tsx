@@ -40,6 +40,10 @@ const AppContext = createContext<AppContextType>({
   notifyCaregiverEnabled: false,
   caregiverEmail: '',
   userName: '',
+  // Default sound settings
+  volume: 0.8,
+  notificationSoundKey: 'notification',
+  confirmationSoundKey: 'confirmation'
 });
 
 export const useAppContext = () => useContext(AppContext);
