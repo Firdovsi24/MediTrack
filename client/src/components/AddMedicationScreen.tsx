@@ -204,141 +204,143 @@ const AddMedicationScreen = ({ onBack, onContinueToSchedule }: AddMedicationScre
           <h2 className="text-2xl font-bold">Add Medication</h2>
         </div>
         
-        {!isManualEntry && (
-          <>
-            <div className="flex space-x-4 mb-6">
-              <button 
-                onClick={startCamera}
-                className="flex-1 bg-primary hover:bg-blue-600 text-white font-bold py-4 px-4 rounded-lg transition flex justify-center items-center"
-                disabled={isProcessing}
-              >
-                <i className="fas fa-camera mr-2"></i> Take Photo
-              </button>
-              <button 
-                onClick={handleUploadClick}
-                className="flex-1 bg-gray-700 hover:bg-gray-800 text-white font-bold py-4 px-4 rounded-lg transition flex justify-center items-center"
-                disabled={isProcessing}
-              >
-                <i className="fas fa-upload mr-2"></i> Upload Image
-              </button>
+        <div className="flex-1 overflow-y-auto pb-24">
+          {!isManualEntry && (
+            <>
+              <div className="flex space-x-4 mb-6">
+                <button 
+                  onClick={startCamera}
+                  className="flex-1 bg-primary hover:bg-blue-600 text-white font-bold py-4 px-4 rounded-lg transition flex justify-center items-center"
+                  disabled={isProcessing}
+                >
+                  <i className="fas fa-camera mr-2"></i> Take Photo
+                </button>
+                <button 
+                  onClick={handleUploadClick}
+                  className="flex-1 bg-gray-700 hover:bg-gray-800 text-white font-bold py-4 px-4 rounded-lg transition flex justify-center items-center"
+                  disabled={isProcessing}
+                >
+                  <i className="fas fa-upload mr-2"></i> Upload Image
+                </button>
+                <input 
+                  type="file" 
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept="image/*"
+                  className="hidden"
+                />
+              </div>
+              
+              <p className="text-center text-gray-600 mb-6">
+                Take a photo of your medication bottle or upload an image
+              </p>
+            </>
+          )}
+          
+          {/* Camera Preview */}
+          {cameraActive && (
+            <div className="bg-gray-200 rounded-xl overflow-hidden mb-6 flex items-center justify-center" style={{ height: '300px' }}>
+              <video 
+                ref={videoRef}
+                className="w-full h-full object-cover"
+                autoPlay
+                playsInline
+              ></video>
+              <canvas ref={canvasRef} className="hidden"></canvas>
+              
+              <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+                <button 
+                  onClick={captureImage}
+                  className="bg-primary hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full transition text-xl"
+                >
+                  <i className="fas fa-camera"></i>
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {/* Image Preview */}
+          {imagePreview && (
+            <div className="bg-gray-200 rounded-xl overflow-hidden mb-6" style={{ height: '300px' }}>
+              <img 
+                src={imagePreview} 
+                alt="Medication bottle preview" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+          
+          {/* Processing Indicator */}
+          {isProcessing && (
+            <div className="flex flex-col items-center justify-center py-4 mb-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mb-2"></div>
+              <p className="text-gray-600">Processing image, please wait...</p>
+            </div>
+          )}
+          
+          {/* Medication Form */}
+          <form 
+            onSubmit={handleSubmit(saveMedicationData)} 
+            className="flex-1 flex flex-col"
+          >
+            <div className="mb-4">
+              <label htmlFor="medication-name" className="block text-lg font-medium mb-2">Medication Name</label>
               <input 
-                type="file" 
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                accept="image/*"
-                className="hidden"
+                {...register("name")}
+                id="medication-name" 
+                className={`w-full border-2 ${errors.name ? 'border-destructive' : 'border-gray-300'} rounded-lg px-4 py-3 text-lg`} 
+                placeholder="e.g., Lisinopril"
+              />
+              {errors.name && (
+                <p className="text-destructive text-sm mt-1">{errors.name.message}</p>
+              )}
+            </div>
+            
+            <div className="mb-4">
+              <label htmlFor="medication-dosage" className="block text-lg font-medium mb-2">Dosage</label>
+              <input 
+                {...register("dosage")}
+                id="medication-dosage" 
+                className={`w-full border-2 ${errors.dosage ? 'border-destructive' : 'border-gray-300'} rounded-lg px-4 py-3 text-lg`}
+                placeholder="e.g., 20mg"
+              />
+              {errors.dosage && (
+                <p className="text-destructive text-sm mt-1">{errors.dosage.message}</p>
+              )}
+            </div>
+            
+            <div className="mb-4">
+              <label htmlFor="medication-instructions" className="block text-lg font-medium mb-2">Instructions</label>
+              <input 
+                {...register("instructions")}
+                id="medication-instructions" 
+                className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg"
+                placeholder="e.g., Take 1 tablet daily"
               />
             </div>
             
-            <p className="text-center text-gray-600 mb-6">
-              Take a photo of your medication bottle or upload an image
-            </p>
-          </>
-        )}
-        
-        {/* Camera Preview */}
-        {cameraActive && (
-          <div className="bg-gray-200 rounded-xl overflow-hidden mb-6 flex items-center justify-center" style={{ height: '300px' }}>
-            <video 
-              ref={videoRef}
-              className="w-full h-full object-cover"
-              autoPlay
-              playsInline
-            ></video>
-            <canvas ref={canvasRef} className="hidden"></canvas>
-            
-            <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+            <div className="mt-auto">
               <button 
-                onClick={captureImage}
-                className="bg-primary hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full transition text-xl"
-              >
-                <i className="fas fa-camera"></i>
-              </button>
-            </div>
-          </div>
-        )}
-        
-        {/* Image Preview */}
-        {imagePreview && (
-          <div className="bg-gray-200 rounded-xl overflow-hidden mb-6" style={{ height: '300px' }}>
-            <img 
-              src={imagePreview} 
-              alt="Medication bottle preview" 
-              className="w-full h-full object-cover"
-            />
-          </div>
-        )}
-        
-        {/* Processing Indicator */}
-        {isProcessing && (
-          <div className="flex flex-col items-center justify-center py-4 mb-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mb-2"></div>
-            <p className="text-gray-600">Processing image, please wait...</p>
-          </div>
-        )}
-        
-        {/* Medication Form */}
-        <form 
-          onSubmit={handleSubmit(saveMedicationData)} 
-          className="flex-1 flex flex-col"
-        >
-          <div className="mb-4">
-            <label htmlFor="medication-name" className="block text-lg font-medium mb-2">Medication Name</label>
-            <input 
-              {...register("name")}
-              id="medication-name" 
-              className={`w-full border-2 ${errors.name ? 'border-destructive' : 'border-gray-300'} rounded-lg px-4 py-3 text-lg`} 
-              placeholder="e.g., Lisinopril"
-            />
-            {errors.name && (
-              <p className="text-destructive text-sm mt-1">{errors.name.message}</p>
-            )}
-          </div>
-          
-          <div className="mb-4">
-            <label htmlFor="medication-dosage" className="block text-lg font-medium mb-2">Dosage</label>
-            <input 
-              {...register("dosage")}
-              id="medication-dosage" 
-              className={`w-full border-2 ${errors.dosage ? 'border-destructive' : 'border-gray-300'} rounded-lg px-4 py-3 text-lg`}
-              placeholder="e.g., 20mg"
-            />
-            {errors.dosage && (
-              <p className="text-destructive text-sm mt-1">{errors.dosage.message}</p>
-            )}
-          </div>
-          
-          <div className="mb-4">
-            <label htmlFor="medication-instructions" className="block text-lg font-medium mb-2">Instructions</label>
-            <input 
-              {...register("instructions")}
-              id="medication-instructions" 
-              className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg"
-              placeholder="e.g., Take 1 tablet daily"
-            />
-          </div>
-          
-          <div className="mt-auto">
-            <button 
-              type="submit" 
-              className="w-full bg-primary hover:bg-blue-600 text-white font-bold py-4 px-4 rounded-lg text-xl transition"
-              disabled={isProcessing}
-            >
-              Continue to Schedule
-            </button>
-            
-            {!isManualEntry && (
-              <button 
-                type="button" 
-                onClick={() => setIsManualEntry(true)}
-                className="w-full bg-white hover:bg-gray-100 text-primary font-bold py-4 px-4 rounded-lg text-xl mt-4 transition border-2 border-primary"
+                type="submit" 
+                className="w-full bg-primary hover:bg-blue-600 text-white font-bold py-4 px-4 rounded-lg text-xl transition"
                 disabled={isProcessing}
               >
-                Enter Manually
+                Continue to Schedule
               </button>
-            )}
-          </div>
-        </form>
+              
+              {!isManualEntry && (
+                <button 
+                  type="button" 
+                  onClick={() => setIsManualEntry(true)}
+                  className="w-full bg-white hover:bg-gray-100 text-primary font-bold py-4 px-4 rounded-lg text-xl mt-4 transition border-2 border-primary"
+                  disabled={isProcessing}
+                >
+                  Enter Manually
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
