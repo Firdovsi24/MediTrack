@@ -82,37 +82,74 @@ export const notifyCaregiverAutomatically = async (
   action: 'taken' | 'snoozed',
   medicationDetails: MedicationDetails
 ): Promise<void> => {
-  // Send the email without asking for confirmation
-  const success = await sendCaregiverEmail(
-    caregiverEmail,
-    userName,
-    action,
-    medicationDetails
-  );
-  
-  // Show feedback to the user
-  if (success) {
-    // Display a brief toast or message indicating the email was sent
-    console.log(`Caregiver (${caregiverEmail}) has been notified`);
+  try {
+    // First attempt to use the server API to send the email
+    const success = await sendCaregiverEmail(
+      caregiverEmail,
+      userName,
+      action,
+      medicationDetails
+    );
     
-    // Optional: Could add a toast notification here instead of console log
-    // toast({
-    //   title: "Notification Sent",
-    //   description: `Caregiver has been notified about your medication`,
-    //   variant: "success"
-    // });
-  } else {
-    // Log the error but don't show a disruptive alert to elderly users
-    console.error('Could not send notification to caregiver');
+    // If server API method succeeded
+    if (success) {
+      console.log(`Caregiver (${caregiverEmail}) has been notified via API`);
+      return;
+    }
     
-    // Simply log it without showing alert as it's not critical for the app's functionality
-    // The medication tracking still works even if email fails
+    // If API failed, create a fallback using mailto: links
+    // This ensures elderly users can still notify caregivers even if the SendGrid API has issues
+    console.log("Server email failed, creating mailto: link fallback");
     
-    // If you want to show feedback, use a less intrusive method like:
-    // toast({
-    //   title: "Notification Issue",
-    //   description: "Unable to send caregiver notification right now.",
-    //   variant: "destructive"
-    // });
+    // Format the time for display
+    const timeFormatted = medicationDetails.time.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    
+    // Format the date for display
+    const dateFormatted = medicationDetails.time.toLocaleDateString([], {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    
+    // Create subject line
+    const subject = `Medication ${action === 'taken' ? 'Taken' : 'Snoozed'}: ${medicationDetails.name}`;
+    
+    // Create email body
+    let body = `Hello,\n\n`;
+    body += `This is an automated message to inform you that ${userName} has `;
+    
+    if (action === 'taken') {
+      body += `taken their medication: ${medicationDetails.name}`;
+      if (medicationDetails.dosage) {
+        body += ` (${medicationDetails.dosage})`;
+      }
+    } else {
+      body += `snoozed the reminder for: ${medicationDetails.name}`;
+      if (medicationDetails.dosage) {
+        body += ` (${medicationDetails.dosage})`;
+      }
+      body += `\nThe medication will be reminded again in 10 minutes.`;
+    }
+    
+    body += `\n\nTime: ${timeFormatted} on ${dateFormatted}\n\n`;
+    body += `This is an automated message from the MediTrack medication reminder application.\n`;
+    body += `Please do not reply to this email.`;
+    
+    // Create mailto link with encoded subject and body
+    const mailtoLink = `mailto:${encodeURIComponent(caregiverEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    // Ask user if they want to open their email client
+    if (confirm(`Would you like to notify your caregiver that you've ${action} your medication?`)) {
+      window.open(mailtoLink, '_blank');
+      console.log(`Opened mailto: link for caregiver notification`);
+    }
+    
+  } catch (error) {
+    console.error('Error in caregiver notification process:', error);
+    // We don't show errors to elderly users as it might confuse them
+    // The medication tracking functionality will still work correctly
   }
 };
