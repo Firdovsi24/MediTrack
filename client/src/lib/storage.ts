@@ -34,6 +34,10 @@ interface MediRemindDB extends DBSchema {
       userName: string;
       caregiverEmail: string;
       notifyCaregiverEnabled: boolean;
+      // Sound settings
+      volume: number;
+      notificationSoundKey: string;
+      confirmationSoundKey: string;
     };
   };
 }
@@ -75,6 +79,10 @@ export async function getSettings() {
     userName: '',
     caregiverEmail: '',
     notifyCaregiverEnabled: false,
+    // Default sound settings
+    volume: 0.8,
+    notificationSoundKey: 'notification',  // Default to slow bell chime
+    confirmationSoundKey: 'confirmation',  // Default to achievement chime
   };
   return settings;
 }
@@ -88,6 +96,10 @@ export async function updateSettings(settings: Partial<{
   userName: string;
   caregiverEmail: string;
   notifyCaregiverEnabled: boolean;
+  // Sound settings
+  volume: number;
+  notificationSoundKey: string;
+  confirmationSoundKey: string;
 }>) {
   const db = await getDB();
   const currentSettings = await getSettings();
