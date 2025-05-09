@@ -1,9 +1,13 @@
 import { getDose, updateDose } from "./storage";
+import { playNotificationSound, preloadSounds } from "./soundUtils";
 
 export interface NotificationAction {
   action: 'confirm' | 'snooze';
   doseId: string;
 }
+
+// Preload sounds when this module is imported
+preloadSounds();
 
 // Ensure browser supports notifications
 export function checkNotificationSupport(): { supported: boolean; permissionGranted: boolean } {
@@ -50,33 +54,10 @@ export async function showMedicationReminder(dose: {
   }
   
   try {
-    // Play a calm notification sound using simpler approach
-    try {
-      const audio = new Audio('/notification-sound.mp3');
-      
-      // Set up audio properties
-      audio.volume = 0.7; // Set volume to 70%
-      audio.loop = false;
-      
-      // Play directly without waiting for canplaythrough event
-      audio.play()
-        .then(() => console.log('Notification sound played successfully'))
-        .catch(error => {
-          console.warn('Could not play notification sound:', error);
-          
-          // Try alternative method if the first fails
-          setTimeout(() => {
-            const fallbackAudio = new Audio();
-            fallbackAudio.src = '/notification-sound.mp3';
-            fallbackAudio.volume = 0.7;
-            fallbackAudio.play()
-              .then(() => console.log('Fallback notification sound played successfully'))
-              .catch(e => console.warn('Fallback notification sound failed:', e));
-          }, 100);
-        });
-    } catch (error) {
-      console.warn('Could not create audio element:', error);
-    }
+    // Play notification sound using our utility
+    playNotificationSound(0.8)
+      .then(() => console.log('Medication reminder notification sound played'))
+      .catch(error => console.warn('Failed to play notification sound:', error));
     
     // Create notification - note that actions only work with ServiceWorker notifications
     // This basic notification will open the app when clicked

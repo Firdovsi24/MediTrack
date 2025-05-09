@@ -145,29 +145,22 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       
       const currentTime = new Date();
       
-      // Play a confirmation sound using simpler approach
+      // Play a gentle piano confirmation sound 
       try {
-        const audio = new Audio('/confirmation-sound.mp3');
-        
-        // Set up audio properties
-        audio.volume = 0.7; // Set volume to 70%
+        // Use a preloaded audio object to ensure it plays immediately
+        const audio = new Audio();
+        audio.src = '/sounds/piano-confirmation.mp3'; // Gentle piano confirmation sound
+        audio.volume = 0.8; // Slightly higher volume for better audibility for seniors
         audio.loop = false;
         
-        // Play directly without waiting for canplaythrough event
+        // Force the audio to load before playing
+        audio.load();
+        
+        // Play directly
         audio.play()
           .then(() => console.log('Confirmation sound played successfully'))
           .catch(error => {
             console.warn('Could not play confirmation sound:', error);
-            
-            // Try alternative method if the first fails
-            setTimeout(() => {
-              const fallbackAudio = new Audio();
-              fallbackAudio.src = '/confirmation-sound.mp3';
-              fallbackAudio.volume = 0.7;
-              fallbackAudio.play()
-                .then(() => console.log('Fallback confirmation sound played successfully'))
-                .catch(e => console.warn('Fallback confirmation sound failed:', e));
-            }, 100);
           });
       } catch (error) {
         console.warn('Could not create audio element:', error);
@@ -249,29 +242,39 @@ export const AppProvider = ({ children }: AppProviderProps) => {
               if (medDose) {
                 const medicationDetails = medDose.medication || await getMedication(medDose.medicationId);
                 if (medicationDetails) {
-                  // Play sound and show notification using simpler approach
+                  // Play a gentle piano notification sound for snooze reminder
                   try {
-                    const audio = new Audio('/notification-sound.mp3');
-                    
-                    // Set up audio properties
-                    audio.volume = 0.7; // Set volume to 70%
+                    // Use a preloaded audio object to ensure it plays immediately
+                    const audio = new Audio();
+                    audio.src = '/sounds/soft-notification2.mp3'; // Gentle notification sound
+                    audio.volume = 0.8; // Slightly higher volume for better audibility for seniors
                     audio.loop = false;
                     
-                    // Play directly without waiting for canplaythrough event
+                    // Force the audio to load before playing
+                    audio.load();
+                    
+                    // Play immediately after page interaction
+                    const playSound = () => {
+                      audio.play()
+                        .then(() => {
+                          console.log('Snooze reminder sound played successfully');
+                          // Clean up event listeners
+                          document.removeEventListener('click', playSound);
+                          document.removeEventListener('keydown', playSound);
+                        })
+                        .catch(error => {
+                          console.warn('Could not play snooze reminder sound:', error);
+                        });
+                    };
+                    
+                    // Try to play immediately
                     audio.play()
                       .then(() => console.log('Snooze reminder sound played successfully'))
-                      .catch(error => {
-                        console.warn('Could not play snooze reminder sound:', error);
-                        
-                        // Try alternative method if the first fails
-                        setTimeout(() => {
-                          const fallbackAudio = new Audio();
-                          fallbackAudio.src = '/notification-sound.mp3';
-                          fallbackAudio.volume = 0.7;
-                          fallbackAudio.play()
-                            .then(() => console.log('Fallback snooze reminder sound played successfully'))
-                            .catch(e => console.warn('Fallback snooze reminder sound failed:', e));
-                        }, 100);
+                      .catch(err => {
+                        console.warn('Auto-play prevented for snooze reminder. Will play on user interaction:', err);
+                        // Add event listeners to play on first user interaction (browsers require this)
+                        document.addEventListener('click', playSound, { once: true });
+                        document.addEventListener('keydown', playSound, { once: true });
                       });
                   } catch (error) {
                     console.warn('Could not create audio element for snooze reminder:', error);
