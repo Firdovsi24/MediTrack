@@ -50,7 +50,7 @@ export async function showMedicationReminder(dose: {
   }
   
   try {
-    // Play a calm notification sound
+    // Play a calm notification sound using simpler approach
     try {
       const audio = new Audio('/notification-sound.mp3');
       
@@ -58,21 +58,22 @@ export async function showMedicationReminder(dose: {
       audio.volume = 0.7; // Set volume to 70%
       audio.loop = false;
       
-      // Make sure the audio is loaded before playing
-      audio.addEventListener('canplaythrough', () => {
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => console.log('Notification sound played successfully'))
-            .catch(error => console.warn('Could not play notification sound:', error));
-        }
-      });
-      
-      // Handle loading errors
-      audio.addEventListener('error', (e) => {
-        console.error('Error loading notification sound:', e);
-      });
-      
+      // Play directly without waiting for canplaythrough event
+      audio.play()
+        .then(() => console.log('Notification sound played successfully'))
+        .catch(error => {
+          console.warn('Could not play notification sound:', error);
+          
+          // Try alternative method if the first fails
+          setTimeout(() => {
+            const fallbackAudio = new Audio();
+            fallbackAudio.src = '/notification-sound.mp3';
+            fallbackAudio.volume = 0.7;
+            fallbackAudio.play()
+              .then(() => console.log('Fallback notification sound played successfully'))
+              .catch(e => console.warn('Fallback notification sound failed:', e));
+          }, 100);
+        });
     } catch (error) {
       console.warn('Could not create audio element:', error);
     }

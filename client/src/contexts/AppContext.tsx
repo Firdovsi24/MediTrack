@@ -145,7 +145,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       
       const currentTime = new Date();
       
-      // Play a confirmation sound
+      // Play a confirmation sound using simpler approach
       try {
         const audio = new Audio('/confirmation-sound.mp3');
         
@@ -153,21 +153,22 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         audio.volume = 0.7; // Set volume to 70%
         audio.loop = false;
         
-        // Make sure the audio is loaded before playing
-        audio.addEventListener('canplaythrough', () => {
-          const playPromise = audio.play();
-          if (playPromise !== undefined) {
-            playPromise
-              .then(() => console.log('Confirmation sound played successfully'))
-              .catch(error => console.warn('Could not play confirmation sound:', error));
-          }
-        });
-        
-        // Handle loading errors
-        audio.addEventListener('error', (e) => {
-          console.error('Error loading confirmation sound:', e);
-        });
-        
+        // Play directly without waiting for canplaythrough event
+        audio.play()
+          .then(() => console.log('Confirmation sound played successfully'))
+          .catch(error => {
+            console.warn('Could not play confirmation sound:', error);
+            
+            // Try alternative method if the first fails
+            setTimeout(() => {
+              const fallbackAudio = new Audio();
+              fallbackAudio.src = '/confirmation-sound.mp3';
+              fallbackAudio.volume = 0.7;
+              fallbackAudio.play()
+                .then(() => console.log('Fallback confirmation sound played successfully'))
+                .catch(e => console.warn('Fallback confirmation sound failed:', e));
+            }, 100);
+          });
       } catch (error) {
         console.warn('Could not create audio element:', error);
       }
@@ -248,25 +249,33 @@ export const AppProvider = ({ children }: AppProviderProps) => {
               if (medDose) {
                 const medicationDetails = medDose.medication || await getMedication(medDose.medicationId);
                 if (medicationDetails) {
-                  // Play sound and show notification
-                  const audio = new Audio('/notification-sound.mp3');
-                  audio.volume = 0.7;
-                  audio.loop = false;
-                  
-                  // Make sure the audio is loaded before playing
-                  audio.addEventListener('canplaythrough', () => {
-                    const playPromise = audio.play();
-                    if (playPromise !== undefined) {
-                      playPromise
-                        .then(() => console.log('Snooze reminder sound played successfully'))
-                        .catch(error => console.warn('Could not play snooze reminder sound:', error));
-                    }
-                  });
-                  
-                  // Handle loading errors
-                  audio.addEventListener('error', (e) => {
-                    console.error('Error loading snooze reminder sound:', e);
-                  });
+                  // Play sound and show notification using simpler approach
+                  try {
+                    const audio = new Audio('/notification-sound.mp3');
+                    
+                    // Set up audio properties
+                    audio.volume = 0.7; // Set volume to 70%
+                    audio.loop = false;
+                    
+                    // Play directly without waiting for canplaythrough event
+                    audio.play()
+                      .then(() => console.log('Snooze reminder sound played successfully'))
+                      .catch(error => {
+                        console.warn('Could not play snooze reminder sound:', error);
+                        
+                        // Try alternative method if the first fails
+                        setTimeout(() => {
+                          const fallbackAudio = new Audio();
+                          fallbackAudio.src = '/notification-sound.mp3';
+                          fallbackAudio.volume = 0.7;
+                          fallbackAudio.play()
+                            .then(() => console.log('Fallback snooze reminder sound played successfully'))
+                            .catch(e => console.warn('Fallback snooze reminder sound failed:', e));
+                        }, 100);
+                      });
+                  } catch (error) {
+                    console.warn('Could not create audio element for snooze reminder:', error);
+                  }
                   
                   // Show in-app notification
                   // This would be handled by the component that shows the medication notification
