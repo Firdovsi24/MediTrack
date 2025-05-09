@@ -1,0 +1,115 @@
+2025-05-09 19:42:39,214 - semgrep.notifications - WARNING - METRICS: Using configs from the Registry (like --config=p/ci) reports pseudonymous rule metrics to semgrep.dev.
+To disable Registry rule metrics, use "--metrics=off".
+Using configs only from local files (like --config=xyz.yml) does not enable metrics.
+
+More information: https://semgrep.dev/docs/metrics
+
+2025-05-09 19:42:39,215 - semgrep.run_scan - DEBUG - semgrep version 1.2.0
+2025-05-09 19:42:39,221 - semgrep.config_resolver - DEBUG - Loading local config from /home/runner/workspace/.config/.semgrep/semgrep_rules.json
+2025-05-09 19:42:39,225 - semgrep.config_resolver - DEBUG - Done loading local config from /home/runner/workspace/.config/.semgrep/semgrep_rules.json
+2025-05-09 19:42:39,229 - semgrep.config_resolver - DEBUG - Saving rules to /tmp/semgrep-6w1n85wm.rules
+2025-05-09 19:42:39,540 - semgrep.semgrep_core - DEBUG - Failed to open resource semgrep-core-proprietary: [Errno 2] No such file or directory: '/tmp/_MEIfvbyyM/semgrep/bin/semgrep-core-proprietary'.
+2025-05-09 19:42:40,252 - semgrep.rule_lang - DEBUG - semgrep-core validation response: valid=True
+2025-05-09 19:42:40,252 - semgrep.rule_lang - DEBUG - semgrep-core validation succeeded
+2025-05-09 19:42:40,252 - semgrep.rule_lang - DEBUG - RPC validation succeeded
+2025-05-09 19:42:40,253 - semgrep.config_resolver - DEBUG - loaded 1 configs in 1.0322957038879395
+2025-05-09 19:42:40,507 - semgrep.run_scan - VERBOSE - running 1250 rules from 1 config /home/runner/workspace/.config/.semgrep/semgrep_rules.json_0
+2025-05-09 19:42:40,508 - semgrep.run_scan - VERBOSE - No .semgrepignore found. Using default .semgrepignore rules. See the docs for the list of default ignores: https://semgrep.dev/docs/cli-usage/#ignore-files
+2025-05-09 19:42:40,510 - semgrep.run_scan - VERBOSE - Rules:
+2025-05-09 19:42:40,510 - semgrep.run_scan - VERBOSE - <SKIPPED DATA (too many entries; use --max-log-list-entries)>
+2025-05-09 19:42:41,138 - semgrep.core_runner - DEBUG - Passing whole rules directly to semgrep_core
+2025-05-09 19:42:41,419 - semgrep.core_runner - DEBUG - Running Semgrep engine with command:
+2025-05-09 19:42:41,419 - semgrep.core_runner - DEBUG - /tmp/_MEIfvbyyM/semgrep/bin/opengrep-core -json -rules /tmp/tmpg7wpzjf3.json -j 8 -targets /tmp/tmp14swguzp -timeout 5 -timeout_threshold 3 -max_memory 0 -fast
+2025-05-09 19:42:48,814 - semgrep.core_runner - DEBUG - --- semgrep-core stderr ---
+[00.08][[34mINFO[0m]: Executed as: /tmp/_MEIfvbyyM/semgrep/bin/opengrep-core -json -rules /tmp/tmpg7wpzjf3.json -j 8 -targets /tmp/tmp14swguzp -timeout 5 -timeout_threshold 3 -max_memory 0 -fast
+[00.08][[34mINFO[0m]: Version: 1.2.0
+[00.08][[34mINFO[0m]: Parsing rules in /tmp/tmpg7wpzjf3.json
+[01.09][[34mINFO[0m]: scan: processing 322 files (skipping 0), with 487 rules (skipping 0 )
+[03.61][[33mWARNING[0m]: Fixpoint timeout while performing taint analysis [rule: config..semgrep.vendored-rules.javascript.lang.security.audit.detect-non-literal-require file: client/src/components/ScheduleTab.tsx func: ???]
+[0m[03.74][[33mWARNING[0m]: Fixpoint timeout while performing taint analysis [rule: config..semgrep.vendored-rules.javascript.lang.security.audit.detect-non-literal-require file: client/src/components/ScheduleTab.tsx func: ???]
+[0m[05.63][[33mWARNING[0m]: Fixpoint timeout while performing taint analysis [rule: config..semgrep.vendored-rules.javascript.lang.security.audit.unsafe-formatstring file: server/routes.ts func: registerRoutes:30132]
+[0m[06.32][[33mWARNING[0m]: Fixpoint timeout while performing taint analysis [rule: config..semgrep.vendored-rules.javascript.express.security.injection.raw-html-format file: server/routes.ts func: registerRoutes:30132]
+[0m[06.45][[33mWARNING[0m]: Fixpoint timeout while performing taint analysis [rule: config..semgrep.vendored-rules.javascript.express.security.injection.raw-html-format file: server/routes.ts func: registerRoutes:30132]
+[0m[07.35][[34mINFO[0m]: Custom ignore pattern: None
+[07.35][[34mINFO[0m]: Custom ignore pattern: None
+--- end semgrep-core stderr ---
+2025-05-09 19:42:48,823 - semgrep.rule_match - DEBUG - match_key = ('', PosixPath('client/index.html'), 'config..semgrep.vendored-rules.html.security.audit.missing-integrity') match_id = 0ee74fd49637bebe183eca7188dbde26e386314e62cc2e7ba1ee60b377b638243fcd84e6c6fa04886198ccacfa6a711bfbcc61a28f9ddc913d5b3c53083cbc90_0
+2025-05-09 19:42:48,824 - semgrep.rule_match - DEBUG - match_key = (' type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js" (?is).*integrity= (google-analytics\\.com|fonts\\.googleapis\\.com|fonts\\.gstatic\\.com|googletagmanager\\.com) .*rel\\s*=\\s*[\'"]?preconnect.* href="... :// ..." href="//..." href=\'... :// ...\' href=\'//...\' src="... :// ..." src="//..." src=\'... :// ...\' src=\'//...\' <link  type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js" > <script  type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js" >...</script>', PosixPath('client/index.html'), 'config..semgrep.vendored-rules.html.security.audit.missing-integrity') match_id = 0728b64e224596592d04447ba8a642ff94e1fb9fcc07be26d49dc7e7f6898e638ad16ffcaca086932c58f4c6400fe32603323afef02cf9bfebcb0e4a53562a40_0
+2025-05-09 19:42:48,825 - semgrep.rule_match - DEBUG - match_key = (' type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js" (?is).*integrity= (google-analytics\\.com|fonts\\.googleapis\\.com|fonts\\.gstatic\\.com|googletagmanager\\.com) .*rel\\s*=\\s*[\'"]?preconnect.* href="... :// ..." href="//..." href=\'... :// ...\' href=\'//...\' src="... :// ..." src="//..." src=\'... :// ...\' src=\'//...\' <link  type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js" > <script  type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js" >...</script>', PosixPath('client/index.html'), 'config..semgrep.vendored-rules.html.security.audit.missing-integrity') match_id = 0728b64e224596592d04447ba8a642ff94e1fb9fcc07be26d49dc7e7f6898e638ad16ffcaca086932c58f4c6400fe32603323afef02cf9bfebcb0e4a53562a40_0
+2025-05-09 19:42:48,825 - semgrep.rule_match - DEBUG - match_key = (' type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js" (?is).*integrity= (google-analytics\\.com|fonts\\.googleapis\\.com|fonts\\.gstatic\\.com|googletagmanager\\.com) .*rel\\s*=\\s*[\'"]?preconnect.* href="... :// ..." href="//..." href=\'... :// ...\' href=\'//...\' src="... :// ..." src="//..." src=\'... :// ...\' src=\'//...\' <link  type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js" > <script  type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js" >...</script>', PosixPath('client/index.html'), 'config..semgrep.vendored-rules.html.security.audit.missing-integrity') match_id = 0728b64e224596592d04447ba8a642ff94e1fb9fcc07be26d49dc7e7f6898e638ad16ffcaca086932c58f4c6400fe32603323afef02cf9bfebcb0e4a53562a40_0
+2025-05-09 19:42:48,826 - semgrep.rule_match - DEBUG - match_key = ('', PosixPath('client/src/lib/soundUtils.ts'), 'config..semgrep.vendored-rules.javascript.lang.security.audit.unsafe-formatstring') match_id = 25e64735041dec08a18f37bf00ac50d1215e42d2f097170361b1c86bc606680b6550b3f2ec35a6c3116c3c2b0bd84d180e8e3ee9ccfd468bc0e4f1db69915139_0
+2025-05-09 19:42:48,826 - semgrep.rule_match - DEBUG - match_key = ('"..." + "..."\n $X + $Y $X.concat($Y) `...${...}...`\n $X.concat("...")\n `Auto-play prevented for sound \'soundKey\'. Error: $UTIL = require(\'util\')\n...\n $UTIL.format(`Auto-play prevented for sound \'soundKey\'. Error:,err,...)\n console.warn(`Auto-play prevented for sound \'soundKey\'. Error:,err,...)\n', PosixPath('client/src/lib/soundUtils.ts'), 'config..semgrep.vendored-rules.javascript.lang.security.audit.unsafe-formatstring') match_id = 6be838a171fdd3321ba43ba647f7324df2dfe4ba1bf0c8fb2f7f0e14717cc8c06a66c10983b4b5410d349cba7401832635b7ec57e5c07313d868e314c71d0a8c_0
+2025-05-09 19:42:48,827 - semgrep.rule_match - DEBUG - match_key = ('"..." + "..."\n $X + $Y $X.concat($Y) `...${...}...`\n $X.concat("...")\n `Auto-play prevented for sound \'soundKey\'. Error: $UTIL = require(\'util\')\n...\n $UTIL.format(`Auto-play prevented for sound \'soundKey\'. Error:,err,...)\n console.warn(`Auto-play prevented for sound \'soundKey\'. Error:,err,...)\n', PosixPath('client/src/lib/soundUtils.ts'), 'config..semgrep.vendored-rules.javascript.lang.security.audit.unsafe-formatstring') match_id = 6be838a171fdd3321ba43ba647f7324df2dfe4ba1bf0c8fb2f7f0e14717cc8c06a66c10983b4b5410d349cba7401832635b7ec57e5c07313d868e314c71d0a8c_0
+2025-05-09 19:42:48,827 - semgrep.rule_match - DEBUG - match_key = ('"..." + "..."\n $X + $Y $X.concat($Y) `...${...}...`\n $X.concat("...")\n `Auto-play prevented for sound \'soundKey\'. Error: $UTIL = require(\'util\')\n...\n $UTIL.format(`Auto-play prevented for sound \'soundKey\'. Error:,err,...)\n console.warn(`Auto-play prevented for sound \'soundKey\'. Error:,err,...)\n', PosixPath('client/src/lib/soundUtils.ts'), 'config..semgrep.vendored-rules.javascript.lang.security.audit.unsafe-formatstring') match_id = 6be838a171fdd3321ba43ba647f7324df2dfe4ba1bf0c8fb2f7f0e14717cc8c06a66c10983b4b5410d349cba7401832635b7ec57e5c07313d868e314c71d0a8c_0
+2025-05-09 19:42:48,828 - semgrep.rule_match - DEBUG - match_key = ('', PosixPath('client/src/lib/soundUtils.ts'), 'config..semgrep.vendored-rules.javascript.lang.security.audit.unsafe-formatstring') match_id = 25e64735041dec08a18f37bf00ac50d1215e42d2f097170361b1c86bc606680b6550b3f2ec35a6c3116c3c2b0bd84d180e8e3ee9ccfd468bc0e4f1db69915139_0
+2025-05-09 19:42:48,828 - semgrep.rule_match - DEBUG - match_key = ('"..." + "..."\n $X + $Y $X.concat($Y) `...${...}...`\n $X.concat("...")\n `Failed to play sound \'soundKey\' after user interaction: $UTIL = require(\'util\')\n...\n $UTIL.format(`Failed to play sound \'soundKey\' after user interaction:,error,...)\n console.error(`Failed to play sound \'soundKey\' after user interaction:,error,...)\n', PosixPath('client/src/lib/soundUtils.ts'), 'config..semgrep.vendored-rules.javascript.lang.security.audit.unsafe-formatstring') match_id = 145a0904413b7dd64852f4bfb48906b5d2644e6f254614f93c6075db3c751b6c41eb5e1bc4e7c4231b857af15c9dd62ef012d88450593d61de0d7cfc901ce2f8_0
+2025-05-09 19:42:48,829 - semgrep.rule_match - DEBUG - match_key = ('"..." + "..."\n $X + $Y $X.concat($Y) `...${...}...`\n $X.concat("...")\n `Failed to play sound \'soundKey\' after user interaction: $UTIL = require(\'util\')\n...\n $UTIL.format(`Failed to play sound \'soundKey\' after user interaction:,error,...)\n console.error(`Failed to play sound \'soundKey\' after user interaction:,error,...)\n', PosixPath('client/src/lib/soundUtils.ts'), 'config..semgrep.vendored-rules.javascript.lang.security.audit.unsafe-formatstring') match_id = 145a0904413b7dd64852f4bfb48906b5d2644e6f254614f93c6075db3c751b6c41eb5e1bc4e7c4231b857af15c9dd62ef012d88450593d61de0d7cfc901ce2f8_0
+2025-05-09 19:42:48,829 - semgrep.rule_match - DEBUG - match_key = ('"..." + "..."\n $X + $Y $X.concat($Y) `...${...}...`\n $X.concat("...")\n `Failed to play sound \'soundKey\' after user interaction: $UTIL = require(\'util\')\n...\n $UTIL.format(`Failed to play sound \'soundKey\' after user interaction:,error,...)\n console.error(`Failed to play sound \'soundKey\' after user interaction:,error,...)\n', PosixPath('client/src/lib/soundUtils.ts'), 'config..semgrep.vendored-rules.javascript.lang.security.audit.unsafe-formatstring') match_id = 145a0904413b7dd64852f4bfb48906b5d2644e6f254614f93c6075db3c751b6c41eb5e1bc4e7c4231b857af15c9dd62ef012d88450593d61de0d7cfc901ce2f8_0
+2025-05-09 19:42:48,830 - semgrep.rule_match - DEBUG - match_key = ('', PosixPath('client/src/lib/soundUtils.ts'), 'config..semgrep.vendored-rules.javascript.lang.security.audit.unsafe-formatstring') match_id = 25e64735041dec08a18f37bf00ac50d1215e42d2f097170361b1c86bc606680b6550b3f2ec35a6c3116c3c2b0bd84d180e8e3ee9ccfd468bc0e4f1db69915139_0
+2025-05-09 19:42:48,830 - semgrep.rule_match - DEBUG - match_key = ('"..." + "..."\n $X + $Y $X.concat($Y) `...${...}...`\n $X.concat("...")\n `Error creating audio for sound \'soundKey\': $UTIL = require(\'util\')\n...\n $UTIL.format(`Error creating audio for sound \'soundKey\':,error,...)\n console.error(`Error creating audio for sound \'soundKey\':,error,...)\n', PosixPath('client/src/lib/soundUtils.ts'), 'config..semgrep.vendored-rules.javascript.lang.security.audit.unsafe-formatstring') match_id = 26fe222272ddbed065d39ff5ed2614380a3f5dcf67e60bd2d67d4ee2e962eee71a438a7881fa282473ca4664709656b61c9a0b894ad55e42b3564a60a1db0166_0
+2025-05-09 19:42:48,831 - semgrep.rule_match - DEBUG - match_key = ('"..." + "..."\n $X + $Y $X.concat($Y) `...${...}...`\n $X.concat("...")\n `Error creating audio for sound \'soundKey\': $UTIL = require(\'util\')\n...\n $UTIL.format(`Error creating audio for sound \'soundKey\':,error,...)\n console.error(`Error creating audio for sound \'soundKey\':,error,...)\n', PosixPath('client/src/lib/soundUtils.ts'), 'config..semgrep.vendored-rules.javascript.lang.security.audit.unsafe-formatstring') match_id = 26fe222272ddbed065d39ff5ed2614380a3f5dcf67e60bd2d67d4ee2e962eee71a438a7881fa282473ca4664709656b61c9a0b894ad55e42b3564a60a1db0166_0
+2025-05-09 19:42:48,831 - semgrep.rule_match - DEBUG - match_key = ('"..." + "..."\n $X + $Y $X.concat($Y) `...${...}...`\n $X.concat("...")\n `Error creating audio for sound \'soundKey\': $UTIL = require(\'util\')\n...\n $UTIL.format(`Error creating audio for sound \'soundKey\':,error,...)\n console.error(`Error creating audio for sound \'soundKey\':,error,...)\n', PosixPath('client/src/lib/soundUtils.ts'), 'config..semgrep.vendored-rules.javascript.lang.security.audit.unsafe-formatstring') match_id = 26fe222272ddbed065d39ff5ed2614380a3f5dcf67e60bd2d67d4ee2e962eee71a438a7881fa282473ca4664709656b61c9a0b894ad55e42b3564a60a1db0166_0
+2025-05-09 19:42:48,832 - semgrep.rule_match - DEBUG - match_key = ('', PosixPath('server/routes.ts'), 'config..semgrep.vendored-rules.javascript.express.security.injection.raw-html-format') match_id = ba677f2bb05e298e2eb279156b48995fbaf4066dbff4c420ba72dd2c858ef78a6555d4366e8cf5fb6479e556b06b731591ed5273734dc6ef3ebafb0cf50f8f1a_0
+2025-05-09 19:42:48,832 - semgrep.rule_match - DEBUG - match_key = ('', PosixPath('server/routes.ts'), 'config..semgrep.vendored-rules.javascript.express.security.injection.raw-html-format') match_id = ba677f2bb05e298e2eb279156b48995fbaf4066dbff4c420ba72dd2c858ef78a6555d4366e8cf5fb6479e556b06b731591ed5273734dc6ef3ebafb0cf50f8f1a_0
+2025-05-09 19:42:48,833 - semgrep.rule_match - DEBUG - match_key = ('', PosixPath('server/routes.ts'), 'config..semgrep.vendored-rules.javascript.express.security.injection.raw-html-format') match_id = ba677f2bb05e298e2eb279156b48995fbaf4066dbff4c420ba72dd2c858ef78a6555d4366e8cf5fb6479e556b06b731591ed5273734dc6ef3ebafb0cf50f8f1a_0
+2025-05-09 19:42:48,833 - semgrep.rule_match - DEBUG - match_key = ('', PosixPath('server/routes.ts'), 'config..semgrep.vendored-rules.javascript.express.security.injection.raw-html-format') match_id = ba677f2bb05e298e2eb279156b48995fbaf4066dbff4c420ba72dd2c858ef78a6555d4366e8cf5fb6479e556b06b731591ed5273734dc6ef3ebafb0cf50f8f1a_0
+2025-05-09 19:42:48,833 - semgrep.rule_match - DEBUG - match_key = ('', PosixPath('server/routes.ts'), 'config..semgrep.vendored-rules.javascript.lang.security.html-in-template-string') match_id = 252d5e9e3e03042b085042d3b73c68eb69c19f4051b0e0598394b2319328aec1c19bc319257e0271964c432f360d6d25c2037663d24d0ece653155f447f28f20_0
+2025-05-09 19:42:48,834 - semgrep.rule_match - DEBUG - match_key = ('<div style="font-family: Arial, sans-serif; line-height: 1.6;"> .*</?[a-zA-Z] `<div style="font-family: Arial, sans-serif; line-height: 1.6;">${bodyHtml}...`\n `...${bodyHtml}<div style="font-family: Arial, sans-serif; line-height: 1.6;">`\n', PosixPath('server/routes.ts'), 'config..semgrep.vendored-rules.javascript.lang.security.html-in-template-string') match_id = b1a647a4838b882b67218a696631e1134c8fd108d57f4e322db2231dea15c395881964eb97b7bc7f85de441d96de9111ebb93cd8a3f2331a98c1351beac94712_0
+2025-05-09 19:42:48,834 - semgrep.rule_match - DEBUG - match_key = ('<div style="font-family: Arial, sans-serif; line-height: 1.6;"> .*</?[a-zA-Z] `<div style="font-family: Arial, sans-serif; line-height: 1.6;">${bodyHtml}...`\n `...${bodyHtml}<div style="font-family: Arial, sans-serif; line-height: 1.6;">`\n', PosixPath('server/routes.ts'), 'config..semgrep.vendored-rules.javascript.lang.security.html-in-template-string') match_id = b1a647a4838b882b67218a696631e1134c8fd108d57f4e322db2231dea15c395881964eb97b7bc7f85de441d96de9111ebb93cd8a3f2331a98c1351beac94712_0
+2025-05-09 19:42:48,835 - semgrep.rule_match - DEBUG - match_key = ('<div style="font-family: Arial, sans-serif; line-height: 1.6;"> .*</?[a-zA-Z] `<div style="font-family: Arial, sans-serif; line-height: 1.6;">${bodyHtml}...`\n `...${bodyHtml}<div style="font-family: Arial, sans-serif; line-height: 1.6;">`\n', PosixPath('server/routes.ts'), 'config..semgrep.vendored-rules.javascript.lang.security.html-in-template-string') match_id = b1a647a4838b882b67218a696631e1134c8fd108d57f4e322db2231dea15c395881964eb97b7bc7f85de441d96de9111ebb93cd8a3f2331a98c1351beac94712_0
+2025-05-09 19:42:48,837 - semgrep.core_runner - DEBUG - semgrep ran in 0:00:07.698692 on 114 files
+2025-05-09 19:42:48,839 - semgrep.core_runner - DEBUG - findings summary: 3 warning, 0 error, 3 info
+2025-05-09 19:42:48,842 - semgrep.app.auth - DEBUG - Getting API token from settings file
+2025-05-09 19:42:48,842 - semgrep.app.auth - DEBUG - No API token found in settings file
+2025-05-09 19:42:48,843 - semgrep.semgrep_core - DEBUG - Failed to open resource semgrep-core-proprietary: [Errno 2] No such file or directory: '/tmp/_MEIfvbyyM/semgrep/bin/semgrep-core-proprietary'.
+2025-05-09 19:42:48,946 - semgrep.output - VERBOSE - 
+========================================
+Files skipped:
+========================================
+
+  Always skipped by Opengrep:
+
+   • <none>
+
+  Skipped by .gitignore:
+  (Disable by passing --no-git-ignore)
+
+   • <all files not listed by `git ls-files` were skipped>
+
+  Skipped by .semgrepignore:
+  - https://semgrep.dev/docs/ignoring-files-folders-code/#understand-semgrep-defaults
+
+   • <none>
+
+  Skipped by --include patterns:
+
+   • <none>
+
+  Skipped by --exclude patterns:
+
+   • <none>
+
+  Files skipped due to insufficient read permissions:
+
+   • <none>
+
+  Skipped by limiting to files smaller than 1000000 bytes:
+  (Adjust with the --max-target-bytes flag)
+
+   • attached_assets/logo.png
+   • client/src/assets/logo.png
+   • generated-icon.png
+
+  Partially analyzed due to parsing or internal Opengrep errors
+
+   • tailwind.config.ts (1 lines skipped)
+
+2025-05-09 19:42:48,947 - semgrep.output - INFO - Some files were skipped or only partially analyzed.
+  Scan was limited to files tracked by git.
+  Partially scanned: 1 files only partially analyzed due to parsing or internal Opengrep errors
+  Scan skipped: 3 files larger than 1.0 MB
+  For a full list of skipped files, run opengrep with the --verbose flag.
+
+Ran 443 rules on 114 files: 6 findings.
+2025-05-09 19:42:48,948 - semgrep.app.version - DEBUG - Version cache does not exist
+2025-05-09 19:42:48,969 - semgrep.metrics - VERBOSE - Not sending pseudonymous metrics since metrics are configured to OFF and registry usage is False
