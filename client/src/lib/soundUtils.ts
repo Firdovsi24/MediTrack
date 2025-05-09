@@ -5,10 +5,17 @@
 
 // Sound file paths
 const SOUNDS = {
-  notification: '/sounds/soft-notification2.mp3',  // Gentle notification sound
-  confirmation: '/sounds/piano-confirmation.mp3',  // Gentle confirmation sound
-  gentleAlert: '/sounds/gentle-notification.mp3',   // Alternative gentle alert
-  softConfirm: '/sounds/soft-confirmation.mp3'     // Alternative confirmation sound
+  // Primary sounds (slower, more distinct sounds as requested)
+  notification: '/sounds/slow/bell-chime.mp3',       // Slow bell chime for medication reminders
+  confirmation: '/sounds/slow/achievement-chime.mp3', // Slow, rewarding achievement sound
+  
+  // Alternative options (can be switched if preferred)
+  altNotification: '/sounds/slow/gentle-reminder.mp3',  // Alternative gentle reminder
+  altConfirmation: '/sounds/slow/positive-confirm.mp3', // Alternative positive confirmation
+  
+  // Original sounds (kept as fallbacks)
+  originalNotification: '/sounds/soft-notification2.mp3',  // Original notification sound
+  originalConfirmation: '/sounds/piano-confirmation.mp3',  // Original confirmation sound
 };
 
 // Cache audio elements to avoid recreating them
@@ -95,6 +102,38 @@ export function playNotificationSound(volume = 0.8): Promise<void> {
  */
 export function playConfirmationSound(volume = 0.8): Promise<void> {
   return playSound('confirmation', volume);
+}
+
+/**
+ * Play alternative notification sound
+ * @param volume Optional volume (0.0 to 1.0)
+ */
+export function playAlternativeNotificationSound(volume = 0.8): Promise<void> {
+  return playSound('altNotification', volume);
+}
+
+/**
+ * Play alternative confirmation sound
+ * @param volume Optional volume (0.0 to 1.0)
+ */
+export function playAlternativeConfirmationSound(volume = 0.8): Promise<void> {
+  return playSound('altConfirmation', volume);
+}
+
+/**
+ * Play original notification sound
+ * @param volume Optional volume (0.0 to 1.0)
+ */
+export function playOriginalNotificationSound(volume = 0.8): Promise<void> {
+  return playSound('originalNotification', volume);
+}
+
+/**
+ * Play original confirmation sound
+ * @param volume Optional volume (0.0 to 1.0)
+ */
+export function playOriginalConfirmationSound(volume = 0.8): Promise<void> {
+  return playSound('originalConfirmation', volume);
 }
 
 /**

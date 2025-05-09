@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { getSettings, updateSettings, clearAllData } from '@/lib/storage';
 import { useToast } from '@/hooks/use-toast';
 import { useAppContext } from '@/contexts/AppContext';
+import SoundSettingsScreen from './SoundSettingsScreen';
 
 interface SettingsScreenProps {
   onBack: () => void;
