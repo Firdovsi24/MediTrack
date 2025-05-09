@@ -159,32 +159,36 @@ const Home = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 pb-24 max-w-md">
-      <AppHeader onSettingsClick={handleSettingsClick} />
-      
-      <TabNavigation 
-        activeTab={activeTab} 
-        onTabChange={handleTabChange} 
-      />
-      
-      {activeTab === 'today' && (
-        <TodayTab onAddMedicationClick={handleAddMedicationClick} />
-      )}
-      
-      {activeTab === 'schedule' && (
-        <ScheduleTab onAddMedicationClick={handleAddMedicationClick} />
-      )}
-      
-      {activeTab === 'history' && (
-        <HistoryTab />
-      )}
-      
-      <BottomNavigation 
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        onAddClick={handleAddMedicationClick}
-        onSettingsClick={handleSettingsClick}
-      />
+    <div className="min-h-screen flex flex-col relative">
+      <div className="container mx-auto px-4 pb-24 max-w-md">
+        <AppHeader onSettingsClick={handleSettingsClick} />
+        
+        <TabNavigation 
+          activeTab={activeTab} 
+          onTabChange={handleTabChange} 
+        />
+        
+        <div className="overflow-y-auto main-scrollable-content" style={{height: 'calc(100vh - 180px)'}}>
+          {activeTab === 'today' && (
+            <TodayTab onAddMedicationClick={handleAddMedicationClick} />
+          )}
+          
+          {activeTab === 'schedule' && (
+            <ScheduleTab onAddMedicationClick={handleAddMedicationClick} />
+          )}
+          
+          {activeTab === 'history' && (
+            <HistoryTab />
+          )}
+        </div>
+        
+        <BottomNavigation 
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          onAddClick={handleAddMedicationClick}
+          onSettingsClick={handleSettingsClick}
+        />
+      </div>
       
       {showSettingsScreen && (
         <SettingsScreen onBack={() => setShowSettingsScreen(false)} />
