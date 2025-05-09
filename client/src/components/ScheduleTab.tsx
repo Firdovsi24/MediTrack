@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { format, addDays, isSameDay } from "date-fns";
-import { getAllMedications, getSchedulesForMedication, getDosesForDay, deleteMedication } from "@/lib/storage";
+import { getAllMedications, getSchedulesForMedication, getDosesForDay, deleteMedication, updateMedication } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
 
 interface ScheduleTabProps {
@@ -17,6 +17,8 @@ const ScheduleTab = ({ onAddMedicationClick }: ScheduleTabProps) => {
   });
   const [loading, setLoading] = useState(true);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [editingMedication, setEditingMedication] = useState<any | null>(null);
+  const [showEditForm, setShowEditForm] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -160,6 +162,38 @@ const ScheduleTab = ({ onAddMedicationClick }: ScheduleTabProps) => {
     } finally {
       setLoading(false);
       setOpenMenuId(null);
+    }
+  };
+
+  const handleEditMedication = (medication: any) => {
+    setEditingMedication(medication);
+    setShowEditForm(true);
+    setOpenMenuId(null);
+  };
+  
+  const handleSaveEdit = async (updatedData: any) => {
+    try {
+      setLoading(true);
+      if (!editingMedication) return;
+      
+      await updateMedication(editingMedication.id, updatedData);
+      toast({
+        title: "Medication updated",
+        description: "The medication has been updated successfully",
+        variant: "default",
+      });
+      await loadMedications();
+      setShowEditForm(false);
+      setEditingMedication(null);
+    } catch (error) {
+      console.error('Error updating medication:', error);
+      toast({
+        title: "Update Error",
+        description: "There was a problem updating the medication",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
