@@ -237,23 +237,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create HTML version of the email
       const bodyHtml = bodyText.replace(/\n/g, '<br>');
       
+      // Get the configured sender email or use a default if not defined
+      const senderEmail = process.env.SENDGRID_FROM_EMAIL || 'example@replit.dev';
+      
       // Prepare the email message
       const msg = {
         to,
-        from: 'meditrack-notifications@example.com', // Replace with your validated sender
+        from: senderEmail, // Use the configured sender email
         subject,
         text: bodyText,
         html: `<div style="font-family: Arial, sans-serif; line-height: 1.6;">${bodyHtml}</div>`,
       };
       
-      // Send the email
+      // Log the email details (excluding any sensitive information)
       console.log(`Sending ${action} notification email to ${to} for ${userName}`);
-      await sgMail.send(msg);
+      console.log(`From: ${senderEmail}, Subject: ${subject}`);
       
-      res.json({ 
-        success: true, 
-        message: 'Email notification sent successfully' 
-      });
+      try {
+        // Send the email
+        const result = await sgMail.send(msg);
+        console.log('SendGrid response:', result);
+        
+        res.json({ 
+          success: true, 
+          message: 'Email notification sent successfully' 
+        });
+      } catch (sendError: any) {
+        // Detailed error logging for SendGrid errors
+        console.error('SendGrid error details:', {
+          code: sendError.code,
+          message: sendError.message,
+          response: sendError.response?.body ? JSON.stringify(sendError.response.body) : 'No response body'
+        });
+        
+        // Return a more specific error message
+        if (sendError.code === 403) {
+          return res.status(500).json({
+            success: false,
+            error: 'SendGrid authentication error: The sender email may not be verified. Check SendGrid settings.'
+          });
+        }
+        
+        throw sendError; // Re-throw to be caught by the outer try/catch
+      }
     } catch (error) {
       console.error('Error sending email notification:', error);
       res.status(500).json({ 

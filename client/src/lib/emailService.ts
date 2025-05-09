@@ -94,9 +94,25 @@ export const notifyCaregiverAutomatically = async (
   if (success) {
     // Display a brief toast or message indicating the email was sent
     console.log(`Caregiver (${caregiverEmail}) has been notified`);
+    
+    // Optional: Could add a toast notification here instead of console log
+    // toast({
+    //   title: "Notification Sent",
+    //   description: `Caregiver has been notified about your medication`,
+    //   variant: "success"
+    // });
   } else {
-    // Show error feedback
+    // Log the error but don't show a disruptive alert to elderly users
     console.error('Could not send notification to caregiver');
-    alert(`Could not send notification to caregiver. Please try again later.`);
+    
+    // Simply log it without showing alert as it's not critical for the app's functionality
+    // The medication tracking still works even if email fails
+    
+    // If you want to show feedback, use a less intrusive method like:
+    // toast({
+    //   title: "Notification Issue",
+    //   description: "Unable to send caregiver notification right now.",
+    //   variant: "destructive"
+    // });
   }
 };
