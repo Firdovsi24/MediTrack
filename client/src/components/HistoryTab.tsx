@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getDosesForMedication, getMedication } from "@/lib/storage";
+import { getMedication, getAllDoses } from "@/lib/storage";
 import { format, isSameDay, subDays } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 
@@ -7,8 +7,25 @@ interface HistoryTabProps {
   // You can add props if needed
 }
 
+interface EnhancedDose {
+  id: string;
+  medicationId: string;
+  scheduleId: string;
+  status: string;
+  scheduledTime: Date;
+  actualTime?: Date | null;
+  medication?: any;
+  dateLabel: string;
+  timeLabel: string;
+}
+
+interface DayData {
+  dateLabel: string;
+  doses: EnhancedDose[];
+}
+
 const HistoryTab = ({}: HistoryTabProps) => {
-  const [historyData, setHistoryData] = useState<Record<string, any[]>>({});
+  const [historyData, setHistoryData] = useState<Record<string, DayData>>({});
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -20,12 +37,22 @@ const HistoryTab = ({}: HistoryTabProps) => {
     try {
       setLoading(true);
       
-      // Get all medication doses
-      const allDoses: any[] = [];
+      // Get all doses from IndexedDB using our storage helper
+      const allDoses = await getAllDoses();
+      
+      // Filter to only include taken, missed, or past pending doses
+      const now = new Date();
+      const historyDoses = allDoses.filter(dose => 
+        dose.status === 'taken' || 
+        dose.status === 'missed' || 
+        (new Date(dose.scheduledTime) < now && dose.status === 'pending')
+      );
+      
+      console.log('Loaded doses for history:', historyDoses.length);
       
       // Fetch medication data to cross-reference with doses
       const medications = await Promise.all(
-        allDoses.map(async (dose) => {
+        historyDoses.map(async (dose) => {
           const medication = await getMedication(dose.medicationId);
           return {
             ...dose,
@@ -37,14 +64,14 @@ const HistoryTab = ({}: HistoryTabProps) => {
       );
       
       // Group by date
-      const groupedByDate: Record<string, any[]> = {};
+      const groupedByDate: Record<string, EnhancedDose[]> = {};
       
       medications.forEach(dose => {
         const dateKey = format(dose.scheduledTime, 'yyyy-MM-dd');
         if (!groupedByDate[dateKey]) {
           groupedByDate[dateKey] = [];
         }
-        groupedByDate[dateKey].push(dose);
+        groupedByDate[dateKey].push(dose as EnhancedDose);
       });
       
       // Sort each day's doses by time
@@ -56,7 +83,7 @@ const HistoryTab = ({}: HistoryTabProps) => {
       const today = new Date();
       const daysToShow = 3;
       
-      const dummyDates: Record<string, any[]> = {};
+      const dummyDates: Record<string, DayData> = {};
       for (let i = 0; i < daysToShow; i++) {
         const date = subDays(today, i);
         const dateKey = format(date, 'yyyy-MM-dd');
@@ -76,7 +103,7 @@ const HistoryTab = ({}: HistoryTabProps) => {
       }
       
       // Create the final history data
-      const finalHistoryData: Record<string, any> = {};
+      const finalHistoryData: Record<string, DayData> = {};
       const sortedDateKeys = Object.keys(groupedByDate)
         .sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
       
@@ -109,7 +136,7 @@ const HistoryTab = ({}: HistoryTabProps) => {
         .reduce((result, key) => {
           result[key] = finalHistoryData[key];
           return result;
-        }, {} as Record<string, any>);
+        }, {} as Record<string, DayData>);
       
       setHistoryData(sortedHistory);
     } catch (error) {
@@ -198,7 +225,7 @@ const HistoryTab = ({}: HistoryTabProps) => {
                   <p className="text-gray-500">No medication records for this day</p>
                 </div>
               ) : (
-                dayData.doses.map((dose: any) => (
+                dayData.doses.map((dose: EnhancedDose) => (
                   <div key={dose.id} className="bg-white rounded-xl shadow-md p-4 mb-3">
                     <div className="flex items-center">
                       <div className={`${

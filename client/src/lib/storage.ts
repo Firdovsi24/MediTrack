@@ -209,6 +209,12 @@ export async function getDosesForDay(date: Date): Promise<Dose[]> {
   ).sort((a, b) => a.scheduledTime.getTime() - b.scheduledTime.getTime());
 }
 
+export async function getAllDoses(): Promise<Dose[]> {
+  const db = await getDB();
+  const allDoses = await db.getAll('doses');
+  return allDoses;
+}
+
 export async function getDosesForMedication(medicationId: string): Promise<Dose[]> {
   const db = await getDB();
   return db.getAllFromIndex('doses', 'by-medication', medicationId);
