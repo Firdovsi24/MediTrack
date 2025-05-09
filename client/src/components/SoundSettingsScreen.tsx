@@ -25,10 +25,10 @@ const SoundSettingsScreen = ({ onBack }: SoundSettingsScreenProps) => {
         <h2 className="text-2xl font-bold">Sound Settings</h2>
         <button
           onClick={onBack}
-          className="text-gray-600 hover:text-gray-800"
+          className="text-gray-600 hover:text-gray-800 p-2 rounded-full hover:bg-gray-100"
           aria-label="Close settings"
         >
-          <i className="fas fa-times text-xl"></i>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
 
@@ -126,7 +126,21 @@ const SoundButton = ({ label, description, onClick, primary = false }: SoundButt
     } hover:shadow-md transition`}
   >
     <div className="mr-3">
-      <i className={`fas fa-play-circle text-2xl ${primary ? 'text-primary' : 'text-gray-600'}`}></i>
+      <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        width="24" 
+        height="24" 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round"
+        className={primary ? 'text-primary' : 'text-gray-600'}
+      >
+        <circle cx="12" cy="12" r="10"></circle>
+        <polygon points="10 8 16 12 10 16 10 8"></polygon>
+      </svg>
     </div>
     <div className="flex-1">
       <div className={`font-medium ${primary ? 'text-primary' : 'text-gray-800'}`}>{label}</div>
