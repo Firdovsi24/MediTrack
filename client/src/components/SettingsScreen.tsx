@@ -19,6 +19,7 @@ const SettingsScreen = ({ onBack }: SettingsScreenProps) => {
     notifyCaregiverEnabled: false
   });
   const [showPinForm, setShowPinForm] = useState(false);
+  const [showSoundSettings, setShowSoundSettings] = useState(false);
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   const [pinError, setPinError] = useState('');
@@ -300,7 +301,7 @@ const SettingsScreen = ({ onBack }: SettingsScreenProps) => {
           
           <div className="border-b border-gray-300 py-4">
             <h3 className="text-xl font-semibold mb-2">Accessibility</h3>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-4">
               <span className="text-lg">High Contrast Mode</span>
               <div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full">
                 <input 
@@ -316,7 +317,26 @@ const SettingsScreen = ({ onBack }: SettingsScreenProps) => {
                 ></label>
               </div>
             </div>
+            
+            <div className="mt-4">
+              <button
+                onClick={() => setShowSoundSettings(true)}
+                className="flex items-center text-primary font-medium"
+              >
+                <i className="fas fa-volume-up mr-2"></i>
+                Medication Reminder Sounds
+              </button>
+              <p className="text-sm text-gray-600 mt-1 ml-6">
+                Choose and test different sounds for medication reminders
+              </p>
+            </div>
           </div>
+          
+          {showSoundSettings && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+              <SoundSettingsScreen onBack={() => setShowSoundSettings(false)} />
+            </div>
+          )}
           
           <div className="border-b border-gray-300 py-4">
             <h3 className="text-xl font-semibold mb-2">Caregiver Notifications</h3>
