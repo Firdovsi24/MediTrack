@@ -1,12 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   playNotificationSound,
   playConfirmationSound,
   playAlternativeNotificationSound,
   playAlternativeConfirmationSound,
   playOriginalNotificationSound,
-  playOriginalConfirmationSound
+  playOriginalConfirmationSound,
+  playSound
 } from '@/lib/soundUtils';
+import { getSettings, updateSettings } from '@/lib/storage';
+import { useToast } from '@/hooks/use-toast';
 
 interface SoundSettingsScreenProps {
   onBack: () => void;
@@ -14,9 +17,73 @@ interface SoundSettingsScreenProps {
 
 const SoundSettingsScreen = ({ onBack }: SoundSettingsScreenProps) => {
   const [volume, setVolume] = useState(0.8);
+  const [notificationSoundKey, setNotificationSoundKey] = useState('notification');
+  const [confirmationSoundKey, setConfirmationSoundKey] = useState('confirmation');
+  const { toast } = useToast();
+
+  // Load saved settings when component mounts
+  useEffect(() => {
+    const loadSoundSettings = async () => {
+      try {
+        const settings = await getSettings();
+        if (settings) {
+          // Set volume from settings or default to 0.8
+          setVolume(settings.volume || 0.8);
+          
+          // Set notification sound key from settings or default
+          if (settings.notificationSoundKey) {
+            setNotificationSoundKey(settings.notificationSoundKey);
+          }
+          
+          // Set confirmation sound key from settings or default
+          if (settings.confirmationSoundKey) {
+            setConfirmationSoundKey(settings.confirmationSoundKey);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading sound settings:', error);
+      }
+    };
+    
+    loadSoundSettings();
+  }, []);
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setVolume(parseFloat(e.target.value));
+  };
+  
+  const handleSelectNotificationSound = (soundKey: string) => {
+    setNotificationSoundKey(soundKey);
+    playSound(soundKey as any, volume);
+  };
+  
+  const handleSelectConfirmationSound = (soundKey: string) => {
+    setConfirmationSoundKey(soundKey);
+    playSound(soundKey as any, volume);
+  };
+  
+  const handleSaveSettings = async () => {
+    try {
+      await updateSettings({
+        volume,
+        notificationSoundKey,
+        confirmationSoundKey
+      });
+      
+      toast({
+        title: "Sound settings saved",
+        description: "Your sound preferences have been updated",
+      });
+      
+      onBack();
+    } catch (error) {
+      console.error('Error saving sound settings:', error);
+      toast({
+        title: "Error",
+        description: "Could not save sound settings",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -54,20 +121,22 @@ const SoundSettingsScreen = ({ onBack }: SoundSettingsScreenProps) => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <SoundButton 
-            label="Bell Chime (Current)" 
+            label="Bell Chime" 
             description="A gentle bell reminder sound"
-            onClick={() => playNotificationSound(volume)} 
-            primary
+            onClick={() => handleSelectNotificationSound('notification')} 
+            primary={notificationSoundKey === 'notification'}
           />
           <SoundButton 
             label="Gentle Reminder" 
             description="A soft, peaceful reminder"
-            onClick={() => playAlternativeNotificationSound(volume)} 
+            onClick={() => handleSelectNotificationSound('altNotification')} 
+            primary={notificationSoundKey === 'altNotification'}
           />
           <SoundButton 
             label="Original Sound" 
             description="The original notification sound"
-            onClick={() => playOriginalNotificationSound(volume)} 
+            onClick={() => handleSelectNotificationSound('originalNotification')} 
+            primary={notificationSoundKey === 'originalNotification'}
           />
         </div>
       </div>
@@ -81,27 +150,29 @@ const SoundSettingsScreen = ({ onBack }: SoundSettingsScreenProps) => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <SoundButton 
-            label="Achievement Chime (Current)" 
+            label="Achievement Chime" 
             description="A rewarding achievement sound"
-            onClick={() => playConfirmationSound(volume)} 
-            primary
+            onClick={() => handleSelectConfirmationSound('confirmation')} 
+            primary={confirmationSoundKey === 'confirmation'}
           />
           <SoundButton 
             label="Positive Confirmation" 
             description="A gentle positive confirmation"
-            onClick={() => playAlternativeConfirmationSound(volume)} 
+            onClick={() => handleSelectConfirmationSound('altConfirmation')} 
+            primary={confirmationSoundKey === 'altConfirmation'}
           />
           <SoundButton 
             label="Original Sound" 
             description="The original confirmation sound"
-            onClick={() => playOriginalConfirmationSound(volume)} 
+            onClick={() => handleSelectConfirmationSound('originalConfirmation')} 
+            primary={confirmationSoundKey === 'originalConfirmation'}
           />
         </div>
       </div>
 
       <div className="mt-8 border-t pt-4">
         <button
-          onClick={onBack}
+          onClick={handleSaveSettings}
           className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 px-4 rounded-lg transition"
         >
           Save & Close
